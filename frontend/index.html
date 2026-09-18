@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBERTRIAGE AI - Digital Forensics & Cyber Incident Response</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Vis.js Network for interactive graph -->
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app-layout">
+    <!-- Persistent Left Sidebar -->
+    <aside id="sidebar">
+      <div class="brand-container">
+        <div class="brand-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="brand-text">
+          <h1>CYBERTRIAGE</h1>
+          <p>DFIR INTELLIGENCE</p>
+        </div>
+      </div>
+
+      <ul class="nav-links" id="sidebar-nav">
+        <li class="nav-item active" data-page="dashboard">
+          <button><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+        </li>
+        <li class="nav-item" data-page="cases">
+          <button><i class="fa-solid fa-folder-open"></i> Cases</button>
+        </li>
+        <li class="nav-item" data-page="evidence">
+          <button><i class="fa-solid fa-file-shield"></i> Evidence Ingestion</button>
+        </li>
+        <li class="nav-item" data-page="evidence-explorer">
+          <button><i class="fa-solid fa-magnifying-glass-chart"></i> Evidence Explorer</button>
+        </li>
+        <li class="nav-item" data-page="artifacts">
+          <button><i class="fa-solid fa-microchip"></i> Artifact Explorer</button>
+        </li>
+        <li class="nav-item" data-page="iocs">
+          <button><i class="fa-solid fa-biohazard"></i> IOC / Indicators</button>
+        </li>
+        <li class="nav-item" data-page="timeline">
+          <button><i class="fa-solid fa-clock-rotate-left"></i> Timeline</button>
+        </li>
+        <li class="nav-item" data-page="graph">
+          <button><i class="fa-solid fa-diagram-project"></i> Investigation Graph</button>
+        </li>
+        <li class="nav-item" data-page="ai-investigator">
+          <button><i class="fa-solid fa-robot"></i> AI Investigator</button>
+        </li>
+        <li class="nav-item" data-page="findings">
+          <button><i class="fa-solid fa-triangle-exclamation"></i> Findings & Conflicts</button>
+        </li>
+        <li class="nav-item" data-page="reports">
+          <button><i class="fa-solid fa-file-contract"></i> Reports</button>
+        </li>
+        <li class="nav-item" data-page="settings">
+          <button><i class="fa-solid fa-sliders"></i> Settings</button>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+          <span style="font-weight:600; color:var(--text-primary);">SIH1744 PROTOTYPE</span>
+          <span class="badge badge-low" style="font-size:0.65rem;">ONLINE</span>
+        </div>
+        <div style="font-size:0.7rem; color:var(--text-muted);">
+          SHA-256 Chain of Custody Verified
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div id="main-wrapper">
+      <!-- Topbar Header -->
+      <header id="topbar">
+        <div class="topbar-left">
+          <div class="case-badge">
+            <i class="fa-solid fa-folder-closed" style="color:var(--text-secondary);"></i>
+            <span style="color:var(--text-secondary);">CASE:</span>
+            <span class="code" id="topbar-case-code">INC-2026-DEMO</span>
+            <span style="color:var(--text-muted);">|</span>
+            <span id="topbar-case-name" style="font-weight:600; max-width:240px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Suspicious Data Access Investigation</span>
+          </div>
+          
+          <div class="integrity-pill">
+            <i class="fa-solid fa-check-circle"></i>
+            <span>Integrity Verified</span>
+          </div>
+
+          <div id="topbar-case-status" class="badge badge-info" style="font-size:0.75rem;">
+            In Progress
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="search-trigger-btn" id="btn-open-search">
+            <i class="fa-solid fa-search"></i>
+            <span>Search Case (IP, Hash, User)...</span>
+            <span class="kbd-shortcut">Ctrl+K</span>
+          </button>
+
+          <button class="btn btn-secondary" id="btn-quick-create-case" style="padding:0.4rem 0.75rem; font-size:0.8rem;">
+            <i class="fa-solid fa-plus"></i> New Case
+          </button>
+
+          <div style="display:flex; align-items:center; gap:0.6rem; border-left:1px solid var(--border-color); padding-left:1rem;">
+            <div style="width:32px; height:32px; border-radius:50%; background:var(--bg-tertiary); display:flex; align-items:center; justify-content:center; color:var(--accent-cyan); font-weight:700; font-size:0.8rem; border:1px solid var(--border-color);">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div style="line-height:1.2;">
+              <div id="topbar-investigator" style="font-size:0.825rem; font-weight:600;">Forensic Lead</div>
+              <div style="font-size:0.7rem; color:var(--text-muted);">SOC / DFIR Tier 3</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Dynamic Page Outlet -->
+      <main id="page-content">
+        <!-- Rendered by JavaScript modules -->
+      </main>
+    </div>
+  </div>
+
+  <!-- Global Modals Container -->
+  <div id="modal-root"></div>
+
+  <!-- Application JavaScript Entrypoint -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
