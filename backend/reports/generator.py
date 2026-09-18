@@ -1,8 +1,21 @@
 import os
 import json
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List
+
+IST_TZ = timezone(timedelta(hours=5, minutes=30))
+
+def format_event_ist(ts_str: str) -> str:
+    if not ts_str:
+        return "N/A"
+    try:
+        clean = ts_str.strip().replace("Z", "+00:00")
+        dt = datetime.fromisoformat(clean)
+        dt_ist = dt.astimezone(IST_TZ)
+        return dt_ist.strftime("%I:%M:%S %p IST")
+    except Exception:
+        return ts_str
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, HRFlowable
@@ -147,8 +160,9 @@ def generate_pdf_report(
 
     story = []
 
-    # Current formatted timestamp
-    current_time_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    # Current formatted timestamp in 12-Hour IST
+    now_ist = datetime.now(IST_TZ)
+    current_time_str = now_ist.strftime("%d %b %Y, %I:%M:%S %p IST")
     investigator_name = case.get("investigator") or "Lead Forensic Analyst"
     case_name = case.get("name") or "Cyber Incident Investigation"
 
@@ -158,14 +172,14 @@ def generate_pdf_report(
     story.append(Spacer(1, 6))
     story.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor('#0284C7'), spaceBefore=2, spaceAfter=10))
 
-    # Case Metadata Summary Table (with explicit Name and Date & Time)
+    # Case Metadata Summary Table (with explicit Name and Date & Time in IST)
     case_meta_data = [
         [Paragraph("Case Identifier:", meta_label), Paragraph(case.get("case_code", "N/A"), meta_val),
          Paragraph("Classification:", meta_label), Paragraph(f"PRIORITY: {case.get('priority', 'High').upper()}", meta_val)],
         [Paragraph("Case Name:", meta_label), Paragraph(case_name, meta_val),
          Paragraph("Incident Type:", meta_label), Paragraph(case.get("incident_type", "N/A"), meta_val)],
         [Paragraph("Investigator Name:", meta_label), Paragraph(investigator_name, meta_val),
-         Paragraph("Report Date & Time:", meta_label), Paragraph(current_time_str, meta_val)],
+         Paragraph("Report Date & Time (IST):", meta_label), Paragraph(current_time_str, meta_val)],
         [Paragraph("Integrity Audit:", meta_label), Paragraph("CHAIN OF CUSTODY VERIFIED (SHA-256)", meta_val),
          Paragraph("Total Evidence Files:", meta_label), Paragraph(str(len(evidence_list)), meta_val)],
     ]
@@ -259,11 +273,11 @@ def generate_pdf_report(
     # 5. Incident Timeline Highlights
     story.append(Paragraph("5. Reconstructed Event Chronology", h2_style))
     timeline_data = [
-        [Paragraph("Timestamp (UTC)", meta_label), Paragraph("Phase / Stage", meta_label), Paragraph("Action / Event Summary", meta_label), Paragraph("Source", meta_label)]
+        [Paragraph("Timestamp (IST)", meta_label), Paragraph("Phase / Stage", meta_label), Paragraph("Action / Event Summary", meta_label), Paragraph("Source", meta_label)]
     ]
     for evt in events[:8]:
         timeline_data.append([
-            Paragraph(evt.get("timestamp", "").replace("2026-09-18T", "").replace("Z", ""), meta_val),
+            Paragraph(format_event_ist(evt.get("timestamp", "")), meta_val),
             Paragraph(evt.get("category", "General"), meta_val),
             Paragraph(f"<b>{evt.get('event_type') or evt.get('action')}:</b> {evt.get('details', '')[:45]}", body_style),
             Paragraph(evt.get("raw_reference", "").split("]")[0].replace("[", "") or "Log", disclaimer_style)
