@@ -3,7 +3,7 @@ import { API } from '../api.js';
 
 export async function renderEvidence(container, activeCase, navigateTo) {
   container.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
       <div>
         <h2 style="font-size:1.5rem; font-weight:700; color:#FFFFFF;">Evidence Ingestion & Vault</h2>
         <p style="font-size:0.875rem; color:var(--text-secondary);">
@@ -11,9 +11,37 @@ export async function renderEvidence(container, activeCase, navigateTo) {
         </p>
       </div>
 
-      <button class="btn btn-primary" id="btn-triage-from-evidence">
-        <i class="fa-solid fa-play"></i> Run Triage On Ingested Files
-      </button>
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        <button class="btn btn-secondary" id="btn-load-samples" style="border-color:var(--accent-cyan); color:var(--accent-cyan);">
+          <i class="fa-solid fa-bolt"></i> 1-Click: Ingest 7 Sample Files
+        </button>
+        <a href="/api/demo/download-sample-evidence-zip" class="btn btn-secondary" id="btn-download-zip" download="CyberTriage_Sample_Evidence_Files.zip">
+          <i class="fa-solid fa-file-zipper"></i> Download Test Pack (.ZIP)
+        </a>
+        <button class="btn btn-primary" id="btn-triage-from-evidence">
+          <i class="fa-solid fa-play"></i> Run Triage On Ingested Files
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Info Banner for Testing -->
+    <div class="dfir-card" style="margin-bottom:1.5rem; background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.3); padding:1rem 1.25rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+      <div style="display:flex; align-items:center; gap:0.75rem;">
+        <div style="width:36px; height:36px; border-radius:50%; background:var(--accent-cyan-glow); color:var(--accent-cyan); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">
+          <i class="fa-solid fa-flask"></i>
+        </div>
+        <div>
+          <div style="font-weight:700; font-size:0.9rem; color:#FFFFFF;">Need test files? 7 Pre-configured forensic evidence artifacts are ready!</div>
+          <div style="font-size:0.8rem; color:var(--text-secondary);">
+            Includes Windows Events (4625/4672), Mimikatz Process Logs, Zeek C2 Network PCAP/Logs, USB Mount Artifacts, File Modifications, Chrome History, and System Info.
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn btn-secondary" id="btn-quick-ingest-samples" style="font-size:0.8rem; padding:0.4rem 0.8rem; background:rgba(6,182,212,0.15); border-color:var(--accent-cyan); color:#FFFFFF;">
+          <i class="fa-solid fa-bolt" style="color:var(--accent-cyan);"></i> Ingest Sample Pack
+        </button>
+      </div>
     </div>
 
     <!-- Drag & Drop Upload Zone -->
@@ -26,9 +54,11 @@ export async function renderEvidence(container, activeCase, navigateTo) {
       <p style="font-size:0.825rem; color:var(--text-secondary); margin-bottom:1rem;">
         Supported forensic formats: <strong>CSV, JSON, LOG, TXT, PDF, PNG/JPG, SYSLOG</strong> (Max 50MB per file)
       </p>
-      <button class="btn btn-secondary" id="btn-browse-files">
-        <i class="fa-solid fa-folder-open"></i> Browse Local Files
-      </button>
+      <div style="display:flex; justify-content:center; gap:0.75rem;">
+        <button class="btn btn-secondary" id="btn-browse-files">
+          <i class="fa-solid fa-folder-open"></i> Browse Local Files
+        </button>
+      </div>
       <div id="upload-status-indicator" style="margin-top:1rem; font-size:0.85rem; font-weight:600; display:none;"></div>
     </div>
 
@@ -162,6 +192,29 @@ export async function renderEvidence(container, activeCase, navigateTo) {
       };
     });
   }
+
+  async function handleLoadSamplePack() {
+    statusEl.style.display = 'block';
+    statusEl.style.color = 'var(--accent-cyan)';
+    statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Ingesting 7 synthetic forensic artifacts (Windows events, process logs, network PCAP, USB, file sysmon, chrome history)...`;
+
+    try {
+      const res = await API.loadSamplePack(activeCase.id);
+      statusEl.style.color = 'var(--sev-low)';
+      statusEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> 7 Forensic Evidence files ingested & SHA-256 integrity sealed!`;
+      setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+      loadEvidenceTable();
+    } catch (err) {
+      statusEl.style.color = 'var(--sev-critical)';
+      statusEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Failed to load sample pack: ${err.message}`;
+    }
+  }
+
+  const loadSamplesBtn = document.getElementById('btn-load-samples');
+  if (loadSamplesBtn) loadSamplesBtn.onclick = handleLoadSamplePack;
+
+  const quickIngestBtn = document.getElementById('btn-quick-ingest-samples');
+  if (quickIngestBtn) quickIngestBtn.onclick = handleLoadSamplePack;
 
   document.getElementById('btn-triage-from-evidence').onclick = () => {
     navigateTo('dashboard');
