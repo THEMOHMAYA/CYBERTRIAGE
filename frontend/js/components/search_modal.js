@@ -1,5 +1,5 @@
-// Universal Case Search Modal (Ctrl+K)
-import { API } from '../api.js';
+// Universal Case// OmniSearch Modal Component (Ctrl+K)
+import { API, formatISTDateTime } from '../api.js';
 
 export function showSearchModal(caseId, onSelectResult) {
   const modalRoot = document.getElementById('modal-root');
@@ -89,7 +89,7 @@ export function showSearchModal(caseId, onSelectResult) {
               <div class="search-item" style="padding:0.5rem 0.75rem; background:var(--bg-tertiary); border-radius:6px; font-size:0.825rem; display:flex; flex-direction:column; gap:0.2rem; cursor:pointer;" data-type="event" data-id="${evt.id}">
                 <div style="display:flex; justify-content:space-between;">
                   <span style="font-weight:600;">${evt.event_type || 'Event'} (${evt.event_id})</span>
-                  <span class="font-mono" style="color:var(--text-muted); font-size:0.75rem;">${evt.timestamp}</span>
+                  <span class="font-mono" style="color:var(--text-muted); font-size:0.75rem;">${formatISTDateTime(evt.timestamp)}</span>
                 </div>
                 <div style="font-size:0.75rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                   ${evt.raw_reference || evt.process || evt.file || evt.ip}
