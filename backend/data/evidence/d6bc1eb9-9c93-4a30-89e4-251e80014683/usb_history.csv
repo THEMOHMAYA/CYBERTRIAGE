@@ -1,0 +1,3 @@
+timestamp,device_name,vendor,serial_number,drive_letter,user,device_id,action
+2026-09-18T09:20:04Z,DataTraveler 3.0,Kingston,KNG-8832-DF9,E:,analyst01,USBSTOR\DiskKingstonDataTraveler_3.0\1&0,Device Connected / Mounted
+2026-09-18T09:29:10Z,DataTraveler 3.0,Kingston,KNG-8832-DF9,E:,analyst01,USBSTOR\DiskKingstonDataTraveler_3.0\1&0,Device Unmounted / Removed
