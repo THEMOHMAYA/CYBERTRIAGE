@@ -1,5 +1,5 @@
 // Case Dashboard View
-import { API } from '../api.js';
+import { API, formatISTTime } from '../api.js';
 import { showTriageModal } from './triage_modal.js';
 
 export async function renderDashboard(container, activeCase, navigateTo) {
@@ -240,7 +240,7 @@ async function loadDashboardData(caseId) {
         let html = '';
         eventsToShow.forEach(evt => {
           const dotClass = evt.severity === 'Critical' ? 'critical' : (evt.severity === 'High' ? 'high' : (evt.severity === 'Medium' ? 'medium' : ''));
-          const timeStr = evt.timestamp.replace('2026-09-18T', '').replace('Z', '');
+          const timeStr = formatISTTime(evt.timestamp);
           html += `
             <div class="timeline-item">
               <div class="timeline-dot ${dotClass}"></div>
