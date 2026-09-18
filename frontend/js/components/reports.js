@@ -1,8 +1,8 @@
 // Report Generator View (Export to PDF & Formal Forensic Document with Syntax Squad branding)
-import { API } from '../api.js';
+import { API, formatISTTime, formatISTDateTime } from '../api.js';
 
 export async function renderReports(container, activeCase, navigateTo) {
-  const currentDateTime = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+  const currentDateTime = formatISTDateTime(new Date().toISOString());
 
   container.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
@@ -214,7 +214,7 @@ export async function renderReports(container, activeCase, navigateTo) {
         <table style="width:100%; border-collapse:collapse; font-size:0.775rem; margin-bottom:1.5rem;">
           <thead>
             <tr style="background:#1E293B; color:#FFF; text-align:left;">
-              <th style="padding:0.4rem 0.6rem;">Time (UTC)</th>
+              <th style="padding:0.4rem 0.6rem;">Time (IST)</th>
               <th style="padding:0.4rem 0.6rem;">Category</th>
               <th style="padding:0.4rem 0.6rem;">Action / Telemetry Summary</th>
               <th style="padding:0.4rem 0.6rem;">Source File</th>
@@ -223,7 +223,7 @@ export async function renderReports(container, activeCase, navigateTo) {
           <tbody>
             ${timeline.slice(0, 8).map(e => `
               <tr style="border-bottom:1px solid #E2E8F0;">
-                <td style="padding:0.4rem 0.6rem; font-family:monospace; color:#0284C7; font-weight:600;">${e.timestamp.replace('2026-09-18T', '').replace('Z', '')}</td>
+                <td style="padding:0.4rem 0.6rem; font-family:monospace; color:#0284C7; font-weight:600;">${formatISTTime(e.timestamp)}</td>
                 <td style="padding:0.4rem 0.6rem;">${e.category}</td>
                 <td style="padding:0.4rem 0.6rem; font-weight:600;">${e.event_type || e.action}: <span style="font-weight:400; color:#475569;">${(e.details || '').substring(0, 60)}</span></td>
                 <td style="padding:0.4rem 0.6rem; color:#64748B; font-size:0.7rem;">${e.evidence_filename || 'Evidence'}</td>
