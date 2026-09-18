@@ -45,13 +45,6 @@ export const API = {
     return await res.json();
   },
 
-  async loadSamplePack(caseId) {
-    const res = await fetch(`${API_BASE}/cases/${caseId}/evidence/load-sample-pack`, {
-      method: 'POST'
-    });
-    return await res.json();
-  },
-
   // Triage Pipeline
   async executeTriage(caseId) {
     const res = await fetch(`${API_BASE}/cases/${caseId}/triage`, {
@@ -128,9 +121,67 @@ export const API = {
     return await res.json();
   },
 
+  async loadSampleEvidence(caseId) {
+    const res = await fetch(`${API_BASE}/cases/${caseId}/evidence/load-samples`, {
+      method: 'POST'
+    });
+    return await res.json();
+  },
+
+  getSamplePackUrl() {
+    return `${API_BASE}/demo/sample-pack.zip`;
+  },
+
   // Global Search
   async search(caseId, query) {
     const res = await fetch(`${API_BASE}/search?case_id=${caseId}&q=${encodeURIComponent(query)}`);
     return await res.json();
   }
 };
+
+// 12-Hour IST (India Standard Time) Formatter Utility
+export function formatISTTime(timestampStr) {
+  if (!timestampStr) return 'N/A';
+  try {
+    let clean = String(timestampStr).trim();
+    if (!clean.endsWith('Z') && !clean.includes('+') && !clean.includes('-')) {
+      clean += 'Z';
+    }
+    const d = new Date(clean);
+    if (isNaN(d.getTime())) return timestampStr;
+    return d.toLocaleTimeString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      hour12: true,
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit'
+    }) + ' IST';
+  } catch (e) {
+    return timestampStr;
+  }
+}
+
+export function formatISTDateTime(timestampStr) {
+  if (!timestampStr) return 'N/A';
+  try {
+    let clean = String(timestampStr).trim();
+    if (!clean.endsWith('Z') && !clean.includes('+') && !clean.includes('-')) {
+      clean += 'Z';
+    }
+    const d = new Date(clean);
+    if (isNaN(d.getTime())) return timestampStr;
+    return d.toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      hour12: true,
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit'
+    }) + ' IST';
+  } catch (e) {
+    return timestampStr;
+  }
+}
+
