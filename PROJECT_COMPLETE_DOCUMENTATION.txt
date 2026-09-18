@@ -1,0 +1,286 @@
+====================================================================================================
+CYBERTRIAGE AI — COMPLETE ARCHITECTURE, CODEBASE & WORKFLOW DOCUMENTATION
+Team: Syntax Squad | SIH1744: AI-Assisted Digital Forensics & Cyber Triage Platform
+Repository: https://github.com/THEMOHMAYA/CYBERTRIAGE
+====================================================================================================
+
+----------------------------------------------------------------------------------------------------
+1. EXECUTIVE SUMMARY & PRODUCT OVERVIEW
+----------------------------------------------------------------------------------------------------
+CYBERTRIAGE AI is an enterprise-grade, AI-assisted Digital Forensics and Incident Response (DFIR) 
+triage platform built for forensic examiners, SOC analysts, and cyber investigators.
+
+The system automates the digital forensics pipeline:
+  [EVIDENCE INGESTION] -> [SHA-256 HASH SEALING] -> [MULTI-SOURCE PARSING] -> 
+  [ARTIFACT CLASSIFICATION] -> [IOC EXTRACTION] -> [TIMELINE RECONSTRUCTION] -> 
+  [CORRELATION & GRAPH] -> [GROUNDED AI INVESTIGATION] -> [FORMAL FORENSIC PDF REPORT]
+
+Key Value Propositions:
+- 100% Deterministic Chain of Custody (SHA-256 hashing + Read-only preservation copy)
+- Multi-Source Normalization (CSV, JSON, LOG, TXT, PDF, Syslog, Zeek)
+- 9-Category Forensic Artifact Classification & Confidence-Scored IOC Engine
+- Graph Analysis & Multi-Source Conflict/Discrepancy Detection
+- Zero-Hallucination AI Investigator (Strict citations: [Source: ..., EvID: ...])
+- One-Click Executive & Technical Forensic PDF Report (Branded by Syntax Squad)
+
+
+----------------------------------------------------------------------------------------------------
+2. COMPLETE DIRECTORY & FILE STRUCTURE
+----------------------------------------------------------------------------------------------------
+
+CYBERTRIAGE/
+│
+├── backend/
+│   ├── config.py                 <- Application settings, paths, server configurations
+│   ├── database.py               <- SQLite async database engine (SQLAlchemy)
+│   ├── models.py                 <- Database models (Cases, Evidence, Artifacts, Events, IOCs, etc.)
+│   ├── main.py                   <- FastAPI application endpoints, routing, middleware
+│   │
+│   ├── parsers/                  <- Multi-format forensic parsers
+│   │   ├── __init__.py           <- Unified parser factory/dispatcher
+│   │   ├── csv_parser.py         <- CSV table & structured event parser
+│   │   ├── log_parser.py         <- Syslog, Zeek, Web server, auth log parser
+│   │   ├── json_parser.py        <- JSON & JSONL structured parser
+│   │   └── text_pdf_parser.py    <- Raw text, TXT, and PDF parser
+│   │
+│   ├── pipeline/                 <- Automated triage pipeline engines
+│   │   ├── hasher.py             <- SHA-256 / MD5 cryptographic integrity & read-only lock
+│   │   ├── normalizer.py         <- Universal ISO-8601 timestamp & field normalizer
+│   │   ├── classifier.py         <- 9-category forensic artifact classifier
+│   │   ├── ioc_engine.py         <- IOC extraction (IP, Domain, Hash, Email, CVE, Registry)
+│   │   ├── timeline_engine.py    <- Chronological event ordering & phase tagging
+│   │   ├── correlator.py         <- Cross-source event & attack phase correlation
+│   │   ├── graph_engine.py       <- Force-directed entity relationship graph builder
+│   │   └── conflict_engine.py    <- Multi-source timestamp/identity discrepancy detector
+│   │
+│   ├── ai_investigator/          <- Grounded DFIR RAG reasoning system
+│   │   ├── retriever.py          <- Hybrid semantic/keyword retrieval over evidence & IOCs
+│   │   └── engine.py             <- AI reasoning engine with strict citations & conflict notes
+│   │
+│   ├── reports/                  <- Forensic PDF report generator
+│   │   └── generator.py          <- ReportLab PDF generation with Syntax Squad branding
+│   │
+│   └── demo_data/                <- Synthetic demo case and evidence bundle
+│       ├── synthetic_case.py     <- 7 multi-source realistic attack scenario files
+│       └── sample_pack.py        <- ZIP bundle generator for live testing
+│
+├── frontend/
+│   ├── index.html                <- Main Single Page Application shell & navigation
+│   ├── css/
+│   │   └── style.css             <- Dark enterprise SOC/DFIR custom styling
+│   └── js/
+│       ├── app.js                <- State management, router, keyboard shortcuts (Ctrl+K)
+│       ├── api.js                <- REST API client wrapper
+│       └── components/
+│           ├── dashboard.js      <- Case summary, metrics, kill chain breakdown, triage trigger
+│           ├── create_case.js    <- New forensic case creation form
+│           ├── evidence.js       <- Evidence Ingestion, SHA-256 hash vault, sample loaders
+│           ├── evidence_explorer.js <- Raw evidence viewer with line numbering & filters
+│           ├── artifacts.js      <- Classified artifacts viewer across 9 forensic categories
+│           ├── iocs.js           <- Extracted Indicators of Compromise with confidence score
+│           ├── timeline.js       <- Master chronological forensic timeline with filters
+│           ├── graph.js          <- Interactive force-directed relationship graph (Vis.js)
+│           ├── ai_investigator.js<- Grounded forensic Q&A assistant with citations & prompt pills
+│           ├── findings.js       <- Case findings list, MITRE ATT&CK mapping & severity
+│           ├── reports.js        <- PDF generator controls & printable browser preview
+│           ├── settings.js       <- Platform settings & audit logs
+│           ├── triage_modal.js   <- Live animated 6-stage triage progress modal
+│           └── search_modal.js   <- Global OmniSearch dialog (Ctrl+K)
+│
+├── run.py                        <- Single entry point launcher for backend and frontend
+├── verify_frontend_and_api.py    <- Automated 12-point end-to-end acceptance test suite
+└── TEST_EVIDENCE_FILES/          <- Ready-to-use sample evidence files on machine
+
+
+----------------------------------------------------------------------------------------------------
+3. STEP-BY-STEP BREAKDOWN OF EVERY COMPONENT & FILE
+----------------------------------------------------------------------------------------------------
+
+====================================================================================================
+A. BACKEND ARCHITECTURE & DATA LAYER
+====================================================================================================
+
+1. [backend/config.py]
+   - Manages base directories, database URL (`sqlite+aiosqlite:///./data/cybertriage.db`), evidence storage path, and report output folders.
+   - Configures maximum file upload size (50MB) and supported forensic extensions.
+
+2. [backend/database.py]
+   - Initializes asynchronous SQLAlchemy engine and session factory.
+   - Creates tables automatically on server startup.
+
+3. [backend/models.py]
+   - Defines the forensic database schema:
+     * Case: Stores case name, incident date, examiner name, priority, status, description.
+     * Evidence: Stores file metadata, storage path, SHA-256 hash, MD5 hash, read-only status.
+     * Artifact: Stores classified forensic artifacts (logins, commands, network connections, etc.).
+     * Event: Master chronological normalized event log.
+     * IOC: Indicators of Compromise (IPs, MD5/SHA256, Domains, URLs, Registry keys, Emails).
+     * Relationship: Entity link edges (source, target, relation type, weight) for Graph view.
+     * Finding: Key investigative findings tagged with MITRE ATT&CK tactics/techniques and severity.
+     * Report: Generated forensic report history and PDF file paths.
+
+4. [backend/main.py]
+   - Central FastAPI application with CORS middleware, static file serving, and REST endpoints:
+     * Case management (`/api/cases`, `/api/cases/{id}`)
+     * Evidence ingestion & raw file inspection (`/api/cases/{id}/evidence`, `/api/evidence/{id}/raw`)
+     * Triage pipeline execution (`/api/cases/{id}/triage`)
+     * Timeline & filtering (`/api/cases/{id}/timeline`)
+     * IOCs & Artifacts (`/api/cases/{id}/iocs`, `/api/cases/{id}/artifacts`)
+     * Graph network (`/api/cases/{id}/graph`)
+     * AI Investigation queries (`/api/cases/{id}/investigate`)
+     * Findings management (`/api/cases/{id}/findings`)
+     * PDF Report generation & download (`/api/cases/{id}/report/pdf`)
+     * Sample evidence pack ZIP download (`/api/demo/sample-pack.zip`)
+     * 1-Click sample evidence auto-loader (`/api/cases/{id}/evidence/load-samples`)
+     * Global omni-search (`/api/cases/{id}/search?q=...`)
+
+====================================================================================================
+B. EVIDENCE INGESTION & FORENSIC PIPELINE
+====================================================================================================
+
+5. [backend/pipeline/hasher.py]
+   - Computes SHA-256 and MD5 cryptographic hashes streaming in 64KB chunks to guarantee chain of custody.
+   - Sets Windows file permissions to read-only (`0o444` / `stat.S_IREAD`) to prevent any accidental tampering.
+
+6. [backend/parsers/ (csv_parser, log_parser, json_parser, text_pdf_parser)]
+   - CSV Parser: Automatically maps columns (timestamp, user, host, IP, event_id, command, process, status).
+   - Log Parser: Parses standard Syslog, Apache/Nginx web logs, auth.log, and Zeek conn.log formats.
+   - JSON Parser: Unrolls structured log records, event arrays, and audit dumps.
+   - Text/PDF Parser: Extracts lines, timestamps, regex patterns, and structured data blocks from PDF reports or raw text files.
+
+7. [backend/pipeline/normalizer.py]
+   - Parses diverse date-time formats (ISO-8601, RFC-2822, epoch timestamps, Windows file times) and standardizes them into UTC ISO-8601 strings.
+
+8. [backend/pipeline/classifier.py]
+   - Classifies every parsed entry into one of 9 Standard Forensic Categories:
+     1. User Authentication & Logon (Windows 4624/4625, SSH, Kerberos)
+     2. Process Execution (PowerShell, cmd.exe, Rundll32, Mimikatz, whoami)
+     3. Network & Connection (Inbound/Outbound traffic, DNS, C2 beacons, ports)
+     4. File System Activity (File creation, staging, encryption, ransom notes)
+     5. Removable Media & USB (USB mount/dismount, serial numbers, drive letters)
+     6. Web & Browser Activity (Phishing sites, download URLs, suspicious domains)
+     7. Persistence & Registry (Run keys, scheduled tasks, service installations)
+     8. Privilege Escalation (Token elevation, admin rights assignment, sudo)
+     9. System Configuration & Hardware (OS version, build number, hostnames)
+
+9. [backend/pipeline/ioc_engine.py]
+   - Regex and rule-based extraction engine for:
+     * IPv4 & IPv6 addresses (filters out private/broadcast addresses)
+     * Domains and URLs
+     * SHA-256 and MD5 hashes
+     * File paths and executables
+     * Registry keys
+     * Email addresses and CVE identifiers
+   - Computes Confidence Scores (0.0 to 1.0) and Threat Scores based on context (e.g. encoded command = HIGH threat).
+
+10. [backend/pipeline/timeline_engine.py]
+    - Constructs the master chronological timeline across all ingested evidence files.
+    - Tags each event with its corresponding MITRE ATT&CK Phase (Initial Access, Execution, Persistence, Privilege Escalation, Defense Evasion, Credential Access, Discovery, Lateral Movement, Collection, Exfiltration, Impact).
+
+11. [backend/pipeline/correlator.py]
+    - Identifies related activities across different files (e.g., matching a user login at 09:15 in CSV with a PowerShell execution at 09:17 in process logs and an outbound network beacon at 09:19 in syslog).
+
+12. [backend/pipeline/graph_engine.py]
+    - Builds a graph model containing nodes (Users, IP Addresses, Hosts, Processes, Files, Domains) and directed edges (AUTHENTICATED_TO, EXECUTED, CONNECTED_TO, TRANSFERRED_TO, MOUNTED).
+
+13. [backend/pipeline/conflict_engine.py]
+    - Detects forensic anomalies across evidence sources:
+      * Clock skew / timestamp conflicts between different servers.
+      * Conflicting user identity records.
+      * Uncorrelated network connections without matching local process records.
+
+====================================================================================================
+C. AI INVESTIGATOR & RAG REASONING SYSTEM
+====================================================================================================
+
+14. [backend/ai_investigator/retriever.py]
+    - Scans case evidence, classified artifacts, IOC lists, and timeline events to retrieve relevant context for any investigator question.
+
+15. [backend/ai_investigator/engine.py]
+    - Grounded reasoning engine that answers forensic queries:
+      * Mandates strict citations: Every claim has a `[Source: <filename>, EvID: <id>]` citation.
+      * Zero Hallucination: Explicitly discloses when evidence is missing or inconclusive.
+      * Discrepancy Reporting: Highlights multi-source conflicts if detected.
+      * Generates structured incident summaries, root cause analyses, and recommended response steps.
+
+====================================================================================================
+D. FORMAL PDF REPORT GENERATOR
+====================================================================================================
+
+16. [backend/reports/generator.py]
+    - Built using Python's `reportlab` library with enterprise typography, colors, and layout:
+      * Header with Case ID, Classification (CONFIDENTIAL / LAW ENFORCEMENT SENSITIVE), Incident Date, Examiner Name.
+      * Executive Summary with attack narrative and severity metrics.
+      * Evidence Chain of Custody Table (Filenames, Types, Sizes, SHA-256 Hashes).
+      * Extracted Indicators of Compromise Table (Type, Value, Threat Severity, Confidence).
+      * Master Chronological Incident Timeline Table with MITRE ATT&CK tactics.
+      * Key Findings, Root Cause, and Incident Response Recommendations.
+      * Explicit Footer Signature on every page:
+        "Report by Cybertriage created by Syntax Squad | Generated on <timestamp>"
+
+====================================================================================================
+E. FRONTEND USER INTERFACE & SINGLE PAGE APP
+====================================================================================================
+
+17. [frontend/index.html & css/style.css]
+    - Modern dark enterprise SOC interface (Slate/Cyan palette, glowing accents, crisp typography).
+    - Top header with active case switcher, search trigger (`Ctrl+K`), quick triage button, and live status.
+    - Left navigation sidebar with 11 primary views.
+
+18. [frontend/js/app.js & api.js]
+    - Client-side routing, case switching, event dispatching, and REST API communication.
+
+19. [frontend/js/components/]
+    - `dashboard.js`: KPI summary cards (Total Evidence, Artifacts, IOCs, Critical Events), Kill Chain progression chart, Quick Actions.
+    - `evidence.js`: Drag & drop file upload zone, real-time SHA-256 hash sealing, 1-Click Sample Ingest button, Download ZIP button, Evidence inventory table.
+    - `evidence_explorer.js`: Raw evidence content inspector with syntax highlighting, line numbers, search filter, and SHA-256 verification badge.
+    - `artifacts.js`: 9-category tabbed forensic artifact viewer with search and export.
+    - `iocs.js`: IOC table with threat level badges, confidence gauges, filter by type (IP, Hash, Domain).
+    - `timeline.js`: Chronological event feed with phase icons, severity filtering, search, and deep detail expandable cards.
+    - `graph.js`: Interactive force-directed network graph (Vis.js) showing relationships between attackers, users, hosts, IPs, and processes with physics simulation.
+    - `ai_investigator.js`: Grounded AI Chat Assistant with quick forensic prompt pills ("What was the initial access vector?", "List all high-confidence IOCs", "Show exfiltrated files", "Find conflicts").
+    - `findings.js`: Incident findings board with MITRE ATT&CK technique tags, severity badges, and mitigation checklists.
+    - `reports.js`: Formal report configuration, live browser preview, and 1-Click "Download Formal PDF Report" button.
+    - `triage_modal.js`: Animated 6-step triage pipeline modal displaying live progress across Ingestion, Classification, IOCs, Timeline, Correlation, and AI Indexing.
+    - `search_modal.js`: Global OmniSearch popup (`Ctrl+K`) for finding any IP, hash, user, process, or event across the entire case in milliseconds.
+
+
+----------------------------------------------------------------------------------------------------
+4. HOW THE COMPLETE WORKFLOW WORKS (DEMO / WALKTHROUGH GUIDE)
+----------------------------------------------------------------------------------------------------
+
+STEP 1: LAUNCH THE PLATFORM
+- Run `python run.py` in the terminal.
+- Open your browser at `http://127.0.0.1:8000`.
+
+STEP 2: EVIDENCE INGESTION (CHAINS OF CUSTODY)
+- Navigate to "Evidence Ingestion & Vault".
+- Option A: Drag & drop files from `Desktop\CYBERTRIAGE_TEST_EVIDENCE` or click "Browse Local Files".
+- Option B: Click "1-Click Ingest Sample Files".
+- Result: System calculates SHA-256 hashes immediately and locks the files in read-only mode.
+
+STEP 3: RUN AUTOMATED TRIAGE
+- Click "Run Triage On Ingested Files".
+- The 6-stage triage pipeline parses files, classifies artifacts, pulls IOCs, and reconstructs the timeline in seconds.
+
+STEP 4: EXPLORE ARTIFACTS & TIMELINE
+- Go to "Timeline Reconstruction" to see how the attacker brute-forced credentials at 09:10, logged in at 09:15, executed an encoded PowerShell script at 09:17, inserted a USB drive at 09:20, and exfiltrated files to C2 IP 198.51.100.23 at 09:24.
+- Go to "Relationship Graph" to interactively view the attack network connections.
+
+STEP 5: AI-ASSISTED INVESTIGATION
+- Go to "AI Investigator".
+- Ask questions like:
+  * "Summarize this incident and the attack vector"
+  * "What data was exfiltrated and to what destination?"
+  * "Are there any timeline conflicts between logs?"
+- The AI provides evidence-grounded answers citing the exact file names and event IDs.
+
+STEP 6: GENERATE FORMAL PDF REPORT
+- Go to "Reports & Export".
+- Click "Download Official PDF Report".
+- Opens a publication-grade PDF report with full chain of custody, timeline, IOCs, examiner name, incident date, and Syntax Squad footer branding.
+
+
+====================================================================================================
+End of Documentation | CYBERTRIAGE AI by Syntax Squad
+====================================================================================================
