@@ -1,5 +1,5 @@
 // Interactive Forensic Timeline View
-import { API } from '../api.js';
+import { API, formatISTTime, formatISTDateTime } from '../api.js';
 
 export async function renderTimeline(container, activeCase, navigateTo) {
   container.innerHTML = `
@@ -82,7 +82,7 @@ export async function renderTimeline(container, activeCase, navigateTo) {
       let html = '';
       allTimelineEvents.forEach((evt, idx) => {
         const dotClass = evt.severity === 'Critical' ? 'critical' : (evt.severity === 'High' ? 'high' : (evt.severity === 'Medium' ? 'medium' : ''));
-        const timeStr = evt.timestamp.replace('2026-09-18T', '').replace('Z', '');
+        const timeStr = formatISTTime(evt.timestamp);
         
         html += `
           <div class="timeline-item timeline-event-card" data-index="${idx}" style="cursor:pointer; background:var(--bg-tertiary); padding:0.85rem 1rem; border-radius:8px; border:1px solid var(--border-color); transition:border-color 0.15s;">
@@ -152,8 +152,8 @@ export async function renderTimeline(container, activeCase, navigateTo) {
             <div class="font-mono" style="font-weight:600; color:var(--accent-cyan); font-size:0.8rem;">${evt.event_id || 'N/A'}</div>
           </div>
           <div>
-            <span style="font-size:0.7rem; color:var(--text-muted);">TIMESTAMP (UTC)</span>
-            <div class="font-mono" style="font-weight:600; font-size:0.8rem;">${evt.timestamp}</div>
+            <span style="font-size:0.7rem; color:var(--text-muted);">TIMESTAMP (IST)</span>
+            <div class="font-mono" style="font-weight:600; font-size:0.8rem;">${formatISTDateTime(evt.timestamp)}</div>
           </div>
           <div>
             <span style="font-size:0.7rem; color:var(--text-muted);">USER IDENTITY</span>
