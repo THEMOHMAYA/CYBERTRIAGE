@@ -45,6 +45,13 @@ export const API = {
     return await res.json();
   },
 
+  async loadSamplePack(caseId) {
+    const res = await fetch(`${API_BASE}/cases/${caseId}/evidence/load-sample-pack`, {
+      method: 'POST'
+    });
+    return await res.json();
+  },
+
   // Triage Pipeline
   async executeTriage(caseId) {
     const res = await fetch(`${API_BASE}/cases/${caseId}/triage`, {
