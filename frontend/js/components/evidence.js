@@ -1,9 +1,9 @@
 // Evidence Ingestion View
-import { API } from '../api.js';
+import { API, formatISTDateTime } from '../api.js';
 
 export async function renderEvidence(container, activeCase, navigateTo) {
   container.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem;">
       <div>
         <h2 style="font-size:1.5rem; font-weight:700; color:#FFFFFF;">Evidence Ingestion & Vault</h2>
         <p style="font-size:0.875rem; color:var(--text-secondary);">
@@ -11,12 +11,9 @@ export async function renderEvidence(container, activeCase, navigateTo) {
         </p>
       </div>
 
-      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-        <button class="btn btn-secondary" id="btn-load-samples" style="border-color:var(--accent-cyan); color:var(--accent-cyan);">
-          <i class="fa-solid fa-bolt"></i> 1-Click: Ingest 7 Sample Files
-        </button>
-        <a href="/api/demo/download-sample-evidence-zip" class="btn btn-secondary" id="btn-download-zip" download="CyberTriage_Sample_Evidence_Files.zip">
-          <i class="fa-solid fa-file-zipper"></i> Download Test Pack (.ZIP)
+      <div style="display:flex; gap:0.75rem;">
+        <a href="/api/demo/sample-pack.zip" download="CYBERTRIAGE_Sample_Evidence_Pack.zip" class="btn btn-secondary" id="btn-download-pack">
+          <i class="fa-solid fa-file-zipper" style="color:var(--accent-cyan);"></i> Download Sample Pack (ZIP)
         </a>
         <button class="btn btn-primary" id="btn-triage-from-evidence">
           <i class="fa-solid fa-play"></i> Run Triage On Ingested Files
@@ -24,22 +21,22 @@ export async function renderEvidence(container, activeCase, navigateTo) {
       </div>
     </div>
 
-    <!-- Quick Info Banner for Testing -->
-    <div class="dfir-card" style="margin-bottom:1.5rem; background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.3); padding:1rem 1.25rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+    <!-- Quick Sample Evidence Assistant Banner -->
+    <div style="background:rgba(2,132,199,0.08); border:1px solid rgba(2,132,199,0.3); border-radius:8px; padding:1rem 1.25rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
       <div style="display:flex; align-items:center; gap:0.75rem;">
-        <div style="width:36px; height:36px; border-radius:50%; background:var(--accent-cyan-glow); color:var(--accent-cyan); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">
-          <i class="fa-solid fa-flask"></i>
+        <div style="width:36px; height:36px; border-radius:8px; background:rgba(2,132,199,0.2); color:var(--accent-cyan); display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+          <i class="fa-solid fa-folder-tree"></i>
         </div>
         <div>
-          <div style="font-weight:700; font-size:0.9rem; color:#FFFFFF;">Need test files? 7 Pre-configured forensic evidence artifacts are ready!</div>
-          <div style="font-size:0.8rem; color:var(--text-secondary);">
-            Includes Windows Events (4625/4672), Mimikatz Process Logs, Zeek C2 Network PCAP/Logs, USB Mount Artifacts, File Modifications, Chrome History, and System Info.
-          </div>
+          <strong style="color:#FFF; font-size:0.9rem;">Need Sample Evidence Files to Test?</strong>
+          <p style="font-size:0.8rem; color:var(--text-secondary);">
+            Download the ready-to-test ZIP package or click below to automatically ingest sample security logs, network pcap logs, and USB history.
+          </p>
         </div>
       </div>
       <div style="display:flex; gap:0.5rem;">
-        <button class="btn btn-secondary" id="btn-quick-ingest-samples" style="font-size:0.8rem; padding:0.4rem 0.8rem; background:rgba(6,182,212,0.15); border-color:var(--accent-cyan); color:#FFFFFF;">
-          <i class="fa-solid fa-bolt" style="color:var(--accent-cyan);"></i> Ingest Sample Pack
+        <button class="btn btn-secondary" id="btn-auto-load-samples" style="background:var(--bg-tertiary); border-color:var(--accent-cyan); color:var(--accent-cyan); font-size:0.825rem;">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> 1-Click Ingest Sample Files
         </button>
       </div>
     </div>
@@ -97,6 +94,7 @@ export async function renderEvidence(container, activeCase, navigateTo) {
   const fileInput = document.getElementById('file-input');
   const browseBtn = document.getElementById('btn-browse-files');
   const statusEl = document.getElementById('upload-status-indicator');
+  const autoLoadBtn = document.getElementById('btn-auto-load-samples');
 
   browseBtn.onclick = (e) => {
     e.stopPropagation();
@@ -147,13 +145,32 @@ export async function renderEvidence(container, activeCase, navigateTo) {
     }
   }
 
+  autoLoadBtn.onclick = async () => {
+    autoLoadBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Ingesting sample evidence...`;
+    autoLoadBtn.disabled = true;
+
+    try {
+      await API.loadSampleEvidence(activeCase.id);
+      statusEl.style.display = 'block';
+      statusEl.style.color = 'var(--sev-low)';
+      statusEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> Sample evidence files ingested & SHA-256 hashes sealed!`;
+      setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+      loadEvidenceTable();
+    } catch (err) {
+      alert('Error loading sample files: ' + err.message);
+    } finally {
+      autoLoadBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 1-Click Ingest Sample Files`;
+      autoLoadBtn.disabled = false;
+    }
+  };
+
   async function loadEvidenceTable() {
     const evidenceList = await API.listEvidence(activeCase.id);
     document.getElementById('evidence-table-count').textContent = evidenceList.length;
     const tbody = document.getElementById('evidence-table-body');
 
     if (!evidenceList || evidenceList.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:2rem;">No evidence files uploaded yet. Drag and drop files above.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:2rem;">No evidence files uploaded yet. Use the 1-Click Ingest button above or drag & drop files.</td></tr>`;
       return;
     }
 
@@ -168,7 +185,7 @@ export async function renderEvidence(container, activeCase, navigateTo) {
         <td class="font-mono" style="color:var(--accent-cyan); font-size:0.725rem;" title="${ev.sha256}">
           ${ev.sha256.substring(0, 24)}...
         </td>
-        <td class="font-mono" style="font-size:0.75rem; color:var(--text-muted);">${(ev.upload_time || '').replace('T', ' ').substring(0, 19)}</td>
+        <td class="font-mono" style="font-size:0.75rem; color:var(--text-muted);">${formatISTDateTime(ev.upload_time)}</td>
         <td>
           <span class="integrity-pill" style="font-size:0.7rem; padding:0.15rem 0.5rem;">
             <i class="fa-solid fa-shield-check"></i> ${ev.integrity_status}
@@ -192,29 +209,6 @@ export async function renderEvidence(container, activeCase, navigateTo) {
       };
     });
   }
-
-  async function handleLoadSamplePack() {
-    statusEl.style.display = 'block';
-    statusEl.style.color = 'var(--accent-cyan)';
-    statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Ingesting 7 synthetic forensic artifacts (Windows events, process logs, network PCAP, USB, file sysmon, chrome history)...`;
-
-    try {
-      const res = await API.loadSamplePack(activeCase.id);
-      statusEl.style.color = 'var(--sev-low)';
-      statusEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> 7 Forensic Evidence files ingested & SHA-256 integrity sealed!`;
-      setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
-      loadEvidenceTable();
-    } catch (err) {
-      statusEl.style.color = 'var(--sev-critical)';
-      statusEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Failed to load sample pack: ${err.message}`;
-    }
-  }
-
-  const loadSamplesBtn = document.getElementById('btn-load-samples');
-  if (loadSamplesBtn) loadSamplesBtn.onclick = handleLoadSamplePack;
-
-  const quickIngestBtn = document.getElementById('btn-quick-ingest-samples');
-  if (quickIngestBtn) quickIngestBtn.onclick = handleLoadSamplePack;
 
   document.getElementById('btn-triage-from-evidence').onclick = () => {
     navigateTo('dashboard');
