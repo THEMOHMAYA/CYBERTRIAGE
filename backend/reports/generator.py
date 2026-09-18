@@ -20,7 +20,7 @@ def generate_pdf_report(
     correlations: List[Dict[str, Any]],
     investigator_notes: str = ""
 ) -> Path:
-    """Generates a professional forensic PDF report using ReportLab."""
+    """Generates a professional forensic PDF report using ReportLab with Syntax Squad branding."""
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     report_filename = f"Forensic_Report_{case.get('case_code', 'INC-001')}_{int(datetime.now().timestamp())}.pdf"
     pdf_path = REPORTS_DIR / report_filename
@@ -36,7 +36,7 @@ def generate_pdf_report(
 
     styles = getSampleStyleSheet()
 
-    # Custom styles
+    # Custom typography styles
     title_style = ParagraphStyle(
         'TitleStyle',
         parent=styles['Heading1'],
@@ -61,30 +61,30 @@ def generate_pdf_report(
         'H2Style',
         parent=styles['Heading2'],
         fontName='Helvetica-Bold',
-        fontSize=14,
-        leading=18,
+        fontSize=13,
+        leading=17,
         textColor=colors.HexColor('#1E293B'),
-        spaceBefore=14,
-        spaceAfter=6
+        spaceBefore=12,
+        spaceAfter=5
     )
 
     h3_style = ParagraphStyle(
         'H3Style',
         parent=styles['Heading3'],
         fontName='Helvetica-Bold',
-        fontSize=11,
-        leading=14,
+        fontSize=10.5,
+        leading=13,
         textColor=colors.HexColor('#334155'),
-        spaceBefore=8,
-        spaceAfter=4
+        spaceBefore=7,
+        spaceAfter=3
     )
 
     body_style = ParagraphStyle(
         'BodyStyle',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=9,
-        leading=13,
+        fontSize=8.5,
+        leading=12.5,
         textColor=colors.HexColor('#334155'),
         alignment=TA_JUSTIFY
     )
@@ -111,8 +111,8 @@ def generate_pdf_report(
         'CodeStyle',
         parent=styles['Normal'],
         fontName='Courier',
-        fontSize=7.5,
-        leading=10,
+        fontSize=7,
+        leading=9.5,
         textColor=colors.HexColor('#0369A1')
     )
 
@@ -120,27 +120,52 @@ def generate_pdf_report(
         'DisclaimerStyle',
         parent=styles['Normal'],
         fontName='Helvetica-Oblique',
+        fontSize=7.5,
+        leading=10.5,
+        textColor=colors.HexColor('#64748B')
+    )
+
+    footer_brand_style = ParagraphStyle(
+        'FooterBrandStyle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=9.5,
+        leading=13,
+        textColor=colors.HexColor('#0284C7'),
+        alignment=TA_CENTER
+    )
+
+    footer_sub_style = ParagraphStyle(
+        'FooterSubStyle',
+        parent=styles['Normal'],
+        fontName='Helvetica',
         fontSize=8,
         leading=11,
-        textColor=colors.HexColor('#64748B')
+        textColor=colors.HexColor('#64748B'),
+        alignment=TA_CENTER
     )
 
     story = []
 
+    # Current formatted timestamp
+    current_time_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    investigator_name = case.get("investigator") or "Lead Forensic Analyst"
+    case_name = case.get("name") or "Cyber Incident Investigation"
+
     # Title & Header
     story.append(Paragraph("CYBERTRIAGE AI - FORENSIC INVESTIGATION REPORT", title_style))
     story.append(Paragraph("DIGITAL FORENSICS & CYBER INCIDENT RESPONSE (DFIR) REPORT", subtitle_style))
-    story.append(Spacer(1, 8))
-    story.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor('#0284C7'), spaceBefore=2, spaceAfter=12))
+    story.append(Spacer(1, 6))
+    story.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor('#0284C7'), spaceBefore=2, spaceAfter=10))
 
-    # Case Metadata Summary Table
+    # Case Metadata Summary Table (with explicit Name and Date & Time)
     case_meta_data = [
         [Paragraph("Case Identifier:", meta_label), Paragraph(case.get("case_code", "N/A"), meta_val),
          Paragraph("Classification:", meta_label), Paragraph(f"PRIORITY: {case.get('priority', 'High').upper()}", meta_val)],
-        [Paragraph("Case Name:", meta_label), Paragraph(case.get("name", "N/A"), meta_val),
+        [Paragraph("Case Name:", meta_label), Paragraph(case_name, meta_val),
          Paragraph("Incident Type:", meta_label), Paragraph(case.get("incident_type", "N/A"), meta_val)],
-        [Paragraph("Lead Investigator:", meta_label), Paragraph(case.get("investigator", "N/A"), meta_val),
-         Paragraph("Report Generated:", meta_label), Paragraph(datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"), meta_val)],
+        [Paragraph("Investigator Name:", meta_label), Paragraph(investigator_name, meta_val),
+         Paragraph("Report Date & Time:", meta_label), Paragraph(current_time_str, meta_val)],
         [Paragraph("Integrity Audit:", meta_label), Paragraph("CHAIN OF CUSTODY VERIFIED (SHA-256)", meta_val),
          Paragraph("Total Evidence Files:", meta_label), Paragraph(str(len(evidence_list)), meta_val)],
     ]
@@ -150,24 +175,24 @@ def generate_pdf_report(
         ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor('#CBD5E1')),
         ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor('#E2E8F0')),
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+        ('TOPPADDING', (0,0), (-1,-1), 3.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3.5),
     ]))
     story.append(meta_table)
-    story.append(Spacer(1, 14))
+    story.append(Spacer(1, 10))
 
     # 1. Executive Summary
     story.append(Paragraph("1. Executive Summary", h2_style))
     exec_summary = (
-        f"This digital forensics report details the triage and correlation analysis conducted for case "
-        f"<b>{case.get('case_code')} ({case.get('name')})</b>. A comprehensive forensic examination was performed on "
-        f"{len(evidence_list)} ingested evidence items comprising {len(artifacts)} extracted artifacts and {len(events)} normalized events. "
+        f"This digital forensics examination report was prepared for <b>{case_name}</b> "
+        f"(Case ID: <b>{case.get('case_code')}</b>) by investigator <b>{investigator_name}</b> on <b>{current_time_str}</b>. "
+        f"A comprehensive forensic examination was conducted across {len(evidence_list)} ingested evidence items comprising {len(artifacts)} extracted artifacts and {len(events)} normalized events. "
         f"Automated forensic triage identified {len(iocs)} potential indicators of compromise (IOCs) and {len(findings)} high-confidence findings. "
         f"Evidence correlates an initial authentication sequence on DESKTOP-SEC-09 with obfuscated PowerShell execution, "
         f"unauthorized removable USB storage connection, sensitive document staging, and external C2 network communications to IP 203.0.113.42."
     )
     story.append(Paragraph(exec_summary, body_style))
-    story.append(Spacer(1, 10))
+    story.append(Spacer(1, 8))
 
     # 2. Evidence Inventory & Integrity Audit
     story.append(Paragraph("2. Evidence Inventory & Chain of Custody (SHA-256)", h2_style))
@@ -192,7 +217,7 @@ def generate_pdf_report(
         ('BOTTOMPADDING', (0,0), (-1,-1), 3),
     ]))
     story.append(ev_table)
-    story.append(Spacer(1, 12))
+    story.append(Spacer(1, 10))
 
     # 3. Key Investigation Findings
     story.append(Paragraph("3. Primary Investigation Findings", h2_style))
@@ -203,16 +228,16 @@ def generate_pdf_report(
             story.append(Paragraph(f"<b>Forensic Rationale:</b> {f.get('explanation')}", body_style))
         if f.get("mitre_technique"):
             story.append(Paragraph(f"<b>MITRE ATT&CK:</b> {f.get('mitre_technique')}", disclaimer_style))
-        story.append(Spacer(1, 4))
+        story.append(Spacer(1, 3))
 
-    story.append(Spacer(1, 10))
+    story.append(Spacer(1, 8))
 
     # 4. Indicators of Compromise (IOCs)
     story.append(Paragraph("4. Indicators of Compromise (IOCs)", h2_style))
     ioc_table_data = [
         [Paragraph("Indicator", meta_label), Paragraph("Type", meta_label), Paragraph("Status", meta_label), Paragraph("Confidence", meta_label), Paragraph("Source Evidence", meta_label)]
     ]
-    for ioc in iocs[:10]:
+    for ioc in iocs[:8]:
         ioc_table_data.append([
             Paragraph(ioc.get("indicator", "")[:35], code_style),
             Paragraph(ioc.get("type", ""), meta_val),
@@ -225,22 +250,22 @@ def generate_pdf_report(
         ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#1E293B')),
         ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor('#CBD5E1')),
         ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor('#E2E8F0')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('TOPPADDING', (0,0), (-1,-1), 2.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
     ]))
     story.append(ioc_table)
-    story.append(Spacer(1, 12))
+    story.append(Spacer(1, 10))
 
     # 5. Incident Timeline Highlights
     story.append(Paragraph("5. Reconstructed Event Chronology", h2_style))
     timeline_data = [
         [Paragraph("Timestamp (UTC)", meta_label), Paragraph("Phase / Stage", meta_label), Paragraph("Action / Event Summary", meta_label), Paragraph("Source", meta_label)]
     ]
-    for evt in events[:10]:
+    for evt in events[:8]:
         timeline_data.append([
             Paragraph(evt.get("timestamp", "").replace("2026-09-18T", "").replace("Z", ""), meta_val),
             Paragraph(evt.get("category", "General"), meta_val),
-            Paragraph(f"<b>{evt.get('event_type') or evt.get('action')}:</b> {evt.get('details', '')[:50]}", body_style),
+            Paragraph(f"<b>{evt.get('event_type') or evt.get('action')}:</b> {evt.get('details', '')[:45]}", body_style),
             Paragraph(evt.get("raw_reference", "").split("]")[0].replace("[", "") or "Log", disclaimer_style)
         ])
     timeline_table = Table(timeline_data, colWidths=[80, 100, 240, 110])
@@ -248,23 +273,41 @@ def generate_pdf_report(
         ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#0F172A')),
         ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor('#CBD5E1')),
         ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor('#E2E8F0')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('TOPPADDING', (0,0), (-1,-1), 2.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
     ]))
     story.append(timeline_table)
-    story.append(Spacer(1, 14))
+    story.append(Spacer(1, 10))
 
     # 6. Investigator Notes & Limitations
     story.append(Paragraph("6. Investigator Notes & Forensic Limitations", h2_style))
     notes_text = investigator_notes or "Removable storage drive and external endpoint network traffic were isolated for forensic analysis. Direct host RAM dump analysis is recommended to recover decrypted session keys."
     story.append(Paragraph(f"<b>Investigator Notes:</b> {notes_text}", body_style))
-    story.append(Spacer(1, 6))
+    story.append(Spacer(1, 4))
     limitations_text = (
         "<b>Limitations & AI Disclaimer:</b> This report contains findings synthesized with the assistance of CYBERTRIAGE AI. "
         "All correlations, IOC classifications, and timeline extractions are derived directly from the provided evidence repository. "
         "Forensic conclusions should be independently reviewed by a certified examiner before submission to legal authorities."
     )
     story.append(Paragraph(limitations_text, disclaimer_style))
+    story.append(Spacer(1, 14))
+
+    # Final Branding Box: "Report by Cybertriage created by Syntax Squad"
+    story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#CBD5E1'), spaceBefore=8, spaceAfter=8))
+    
+    brand_table_data = [
+        [Paragraph("<b>Report by Cybertriage created by Syntax Squad</b>", footer_brand_style)],
+        [Paragraph(f"Case: {case_name} | Examiner: {investigator_name} | Timestamp: {current_time_str}", footer_sub_style)]
+    ]
+    brand_table = Table(brand_table_data, colWidths=[530])
+    brand_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F0F9FF')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#0284C7')),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+    ]))
+    story.append(brand_table)
 
     doc.build(story)
     return pdf_path
