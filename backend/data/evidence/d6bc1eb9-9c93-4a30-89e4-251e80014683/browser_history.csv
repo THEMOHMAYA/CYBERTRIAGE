@@ -1,0 +1,4 @@
+timestamp,browser,url,page_title,user,visit_count,typed_count
+2026-09-18T09:12:00Z,Google Chrome,https://intranet.corporate.local/login,Corporate Single Sign-On,analyst01,3,1
+2026-09-18T09:19:30Z,Google Chrome,https://file-temp-share.net/upload,Anonymous Temporary File Upload,analyst01,1,1
+2026-09-18T09:26:00Z,Google Chrome,https://c2-sync-agent.net/status,Sync Service Gateway,analyst01,2,0
