@@ -1,0 +1,6 @@
+timestamp,event_id,process,pid,parent_pid,parent_process,user,command_line,details
+2026-09-18T09:16:10Z,PROC-0039,explorer.exe,2104,1012,userinit.exe,analyst01,explorer.exe,Windows shell initialized
+2026-09-18T09:17:45Z,PROC-0042,powershell.exe,4812,2104,explorer.exe,analyst01,powershell.exe -NoP -NonI -W Hidden -Enc JABjAGwAaQBlAG4AdA...,Obfuscated encoded command spawned from explorer
+2026-09-18T09:18:12Z,PROC-0045,whoami.exe,5120,4812,powershell.exe,analyst01,whoami.exe /priv,Reconnaissance of user privileges
+2026-09-18T09:22:30Z,PROC-0050,powershell.exe,4812,2104,explorer.exe,analyst01,powershell.exe Get-ChildItem -Path C:\Corporate\Financials,Directory enumeration of confidential data
+2026-09-18T09:27:15Z,PROC-0058,cmd.exe,6234,4812,powershell.exe,analyst01,cmd.exe /c xcopy /E /Y C:\Corporate\Financials E:\Staging\,Bulk file staging operation invoked
