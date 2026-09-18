@@ -1,0 +1,4 @@
+2026-09-18T09:15:25Z firewall01 ALLOW tcp 192.168.1.105:49152 -> 192.168.1.10:88 proto=Kerberos bytes=2450
+2026-09-18T09:18:02Z firewall01 ALLOW udp 192.168.1.105:53210 -> 192.168.1.2:53 proto=DNS query=c2-sync-agent.net
+2026-09-18T09:20:15Z firewall01 ALERT tcp 192.168.1.105:49321 -> 203.0.113.42:443 proto=TLS action=CONNECT status=SUSPICIOUS_OUTBOUND
+2026-09-18T09:25:12Z firewall01 ALERT tcp 192.168.1.105:49450 -> 203.0.113.42:443 proto=TLS action=DATA_TRANSFER bytes=15420310 dst_domain=c2-sync-agent.net
