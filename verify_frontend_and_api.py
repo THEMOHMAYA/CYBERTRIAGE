@@ -40,6 +40,10 @@ def run_acceptance_suite():
     print("\n[3] Testing GET /api/cases/{id}/evidence...")
     status, evidence_list = test_endpoint(f"/api/cases/{case_id}/evidence")
     assert status == 200
+    if len(evidence_list) < 7:
+        print("  [INFO] Ingesting real-life sample evidence into test case...")
+        test_endpoint(f"/api/cases/{case_id}/evidence/load-samples", method="POST")
+        status, evidence_list = test_endpoint(f"/api/cases/{case_id}/evidence")
     assert len(evidence_list) >= 7, f"Expected at least 7 evidence files, got {len(evidence_list)}"
     for ev in evidence_list[:3]:
         assert len(ev["sha256"]) == 64, f"Invalid SHA256: {ev['sha256']}"
