@@ -1,0 +1,5 @@
+timestamp,event_id,action,file_path,process,user,file_size_bytes,sha256_hash
+2026-09-18T09:23:18Z,FILE-0019,File Read,C:\Corporate\Financials\FINANCIAL_Q4_CONFIDENTIAL.xlsx,powershell.exe,analyst01,2419200,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2026-09-18T09:24:02Z,FILE-0020,File Read,C:\Corporate\HR\payroll_records.db,powershell.exe,analyst01,8941000,a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0
+2026-09-18T09:28:10Z,FILE-0022,File Write,E:\Staging\FINANCIAL_Q4_CONFIDENTIAL.xlsx,cmd.exe,analyst01,2419200,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2026-09-18T09:28:35Z,FILE-0023,File Write,E:\Staging\payroll_archive.zip,cmd.exe,analyst01,5210900,4a5b6c7d8e9f0123456789abcdef0123456789abcdef0123456789abcdef0123
