@@ -1,6 +1,4 @@
 import os
-import io
-import zipfile
 import json
 import shutil
 from pathlib import Path
@@ -10,10 +8,10 @@ from datetime import datetime, timezone
 from fastapi import FastAPI, UploadFile, File, Form, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 
-from backend.config import BASE_DIR, DATA_DIR, EVIDENCE_DIR, REPORTS_DIR
+from backend.config import BASE_DIR, DATA_DIR, EVIDENCE_DIR, REPORTS_DIR, FRONTEND_DIR
 from backend.database import (
     init_db, get_db, Case, Evidence, Artifact, Event, IOC,
     Relationship, Finding, InvestigationQuery, Report, generate_uuid, get_utc_now
@@ -57,8 +55,8 @@ app.add_middleware(
 )
 
 FRONTEND_DIR = BASE_DIR.parent / "frontend"
-SAMPLE_DIR = BASE_DIR.parent / "sample_evidence_files"
 
+# Helper function to enrich Case response with counts
 def format_case_response(case_obj: Case, db: Session) -> dict:
     ev_count = db.query(Evidence).filter(Evidence.case_id == case_obj.id).count()
     art_count = db.query(Artifact).filter(Artifact.case_id == case_obj.id).count()
@@ -117,6 +115,18 @@ def get_case(case_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Case not found")
     return format_case_response(case_obj, db)
 
+@app.patch("/api/cases/{case_id}/status", response_model=dict)
+def update_case_status(case_id: str, payload: dict, db: Session = Depends(get_db)):
+    case_obj = db.query(Case).filter(Case.id == case_id).first()
+    if not case_obj:
+        raise HTTPException(status_code=404, detail="Case not found")
+    new_status = payload.get("status", "Completed")
+    case_obj.status = new_status
+    case_obj.updated_at = get_utc_now()
+    db.commit()
+    db.refresh(case_obj)
+    return format_case_response(case_obj, db)
+
 # ==================== EVIDENCE API ====================
 
 @app.post("/api/cases/{case_id}/evidence")
@@ -137,6 +147,7 @@ async def upload_evidence(case_id: str, files: List[UploadFile] = File(...), db:
         with open(temp_dest, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
+        # Hash and preserve read-only
         sha256_val, md5_val, file_size = preserve_evidence_file(temp_dest, final_dest)
         if temp_dest.exists():
             try:
@@ -165,62 +176,6 @@ async def upload_evidence(case_id: str, files: List[UploadFile] = File(...), db:
         uploaded_records.append(evidence_entry)
 
     return {"status": "success", "uploaded_count": len(uploaded_records), "files": [e.filename for e in uploaded_records]}
-
-@app.post("/api/cases/{case_id}/evidence/load-sample-pack")
-def load_sample_evidence_pack(case_id: str, db: Session = Depends(get_db)):
-    """1-Click injects the 7 sample evidence files into the active case's vault."""
-    case_obj = db.query(Case).filter(Case.id == case_id).first()
-    if not case_obj:
-        raise HTTPException(status_code=404, detail="Case not found")
-
-    case_evidence_dir = EVIDENCE_DIR / case_id
-    generated_files = generate_synthetic_evidence_files(case_evidence_dir)
-
-    for fname, fpath in generated_files.items():
-        # Check if already exists in case
-        existing = db.query(Evidence).filter(Evidence.case_id == case_id, Evidence.filename == fname).first()
-        if existing:
-            continue
-
-        sha256_val, md5_val, file_size = preserve_evidence_file(fpath, fpath)
-        ext = fname.split(".")[-1].lower()
-
-        ev_entry = Evidence(
-            case_id=case_id,
-            filename=fname,
-            original_name=fname,
-            file_type=ext,
-            file_size=file_size,
-            sha256=sha256_val,
-            md5=md5_val,
-            status="Processed",
-            integrity_status="Integrity Verified",
-            is_readonly=True,
-            storage_path=str(fpath)
-        )
-        db.add(ev_entry)
-
-    db.commit()
-    return {"status": "success", "message": "7 Sample Forensic Evidence Files Ingested!"}
-
-@app.get("/api/demo/download-sample-evidence-zip")
-def download_sample_evidence_zip():
-    """Generates a downloadable ZIP containing the sample forensic evidence files."""
-    SAMPLE_DIR.mkdir(parents=True, exist_ok=True)
-    generate_synthetic_evidence_files(SAMPLE_DIR)
-
-    zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-        for file_path in SAMPLE_DIR.glob("*"):
-            if file_path.is_file():
-                zip_file.write(file_path, arcname=file_path.name)
-
-    zip_buffer.seek(0)
-    return StreamingResponse(
-        zip_buffer,
-        media_type="application/zip",
-        headers={"Content-Disposition": "attachment; filename=CyberTriage_Sample_Evidence_Files.zip"}
-    )
 
 @app.get("/api/cases/{case_id}/evidence")
 def list_case_evidence(case_id: str, db: Session = Depends(get_db)):
@@ -270,6 +225,10 @@ def get_raw_evidence(case_id: str, evidence_id: str, db: Session = Depends(get_d
 
 @app.post("/api/cases/{case_id}/triage")
 def execute_case_triage(case_id: str, db: Session = Depends(get_db)):
+    """
+    Executes complete end-to-end triage pipeline:
+    EVIDENCE → PARSE → NORMALIZE → CLASSIFY → IOCS → TIMELINE → CORRELATE → FINDINGS
+    """
     case_obj = db.query(Case).filter(Case.id == case_id).first()
     if not case_obj:
         raise HTTPException(status_code=404, detail="Case not found")
@@ -278,6 +237,7 @@ def execute_case_triage(case_id: str, db: Session = Depends(get_db)):
     if not evidence_list:
         raise HTTPException(status_code=400, detail="No evidence files uploaded for this case.")
 
+    # Clear previous derived analysis data for clean run
     db.query(Artifact).filter(Artifact.case_id == case_id).delete()
     db.query(Event).filter(Event.case_id == case_id).delete()
     db.query(IOC).filter(IOC.case_id == case_id).delete()
@@ -289,6 +249,7 @@ def execute_case_triage(case_id: str, db: Session = Depends(get_db)):
     all_normalized_events = []
     all_extracted_artifacts = []
 
+    # 1. PARSE & NORMALIZE
     for ev in evidence_list:
         path = Path(ev.storage_path)
         if not path.exists():
@@ -312,6 +273,7 @@ def execute_case_triage(case_id: str, db: Session = Depends(get_db)):
             all_normalized_events.append(norm_event)
             all_extracted_artifacts.extend(norm_arts)
 
+    # Save Events and Artifacts to database
     for e in all_normalized_events:
         evt_entry = Event(**e)
         db.add(evt_entry)
@@ -322,15 +284,18 @@ def execute_case_triage(case_id: str, db: Session = Depends(get_db)):
 
     db.commit()
 
+    # 2. IOC EXTRACTION
     extracted_iocs = extract_iocs_from_events(all_normalized_events, ev_name_map)
     for ioc_dict in extracted_iocs:
         ioc_entry = IOC(**ioc_dict)
         db.add(ioc_entry)
     db.commit()
 
+    # 3. TIMELINE & CORRELATION
     timeline = build_chronological_timeline(all_normalized_events)
     clusters = correlate_events(timeline)
 
+    # 4. RELATIONSHIP GRAPH BUILD
     ev_dicts = [{"id": ev.id, "original_name": ev.original_name, "sha256": ev.sha256, "file_size": ev.file_size, "integrity_status": ev.integrity_status} for ev in evidence_list]
     nodes, edges = build_investigation_graph(timeline, ev_dicts)
 
@@ -349,8 +314,10 @@ def execute_case_triage(case_id: str, db: Session = Depends(get_db)):
         db.add(rel_entry)
     db.commit()
 
+    # 5. FINDINGS GENERATION
     findings_list = []
     
+    # Check for PowerShell anomaly
     ps_evts = [e for e in all_normalized_events if "powershell" in e.get("process", "").lower() or "enc" in e.get("details", "").lower()]
     if ps_evts:
         findings_list.append({
@@ -368,6 +335,7 @@ def execute_case_triage(case_id: str, db: Session = Depends(get_db)):
             "status": "Confirmed"
         })
 
+    # Check for USB Storage Device Anomaly
     usb_evts = [e for e in all_normalized_events if "usb" in (e.get("details", "") + e.get("action", "")).lower()]
     if usb_evts:
         findings_list.append({
@@ -385,6 +353,7 @@ def execute_case_triage(case_id: str, db: Session = Depends(get_db)):
             "status": "Needs Review"
         })
 
+    # Check for Sensitive File Access
     file_evts = [e for e in all_normalized_events if any(k in e.get("file", "").lower() for k in ["confidential", "financial", "payroll"])]
     if file_evts:
         findings_list.append({
@@ -402,6 +371,7 @@ def execute_case_triage(case_id: str, db: Session = Depends(get_db)):
             "status": "Confirmed"
         })
 
+    # Check for Outbound C2 Network Activity
     net_c2 = [e for e in all_normalized_events if "203.0.113.42" in e.get("ip", "") or "c2" in e.get("domain", "").lower()]
     if net_c2:
         findings_list.append({
@@ -630,6 +600,7 @@ def query_ai_investigator(case_id: str, payload: AIQueryRequest, db: Session = D
     engine = AIInvestigatorEngine(evt_dicts, art_dicts, ioc_dicts, ev_dicts)
     res = engine.query(payload.question)
 
+    # Record investigation query in DB
     query_record = InvestigationQuery(
         case_id=case_id,
         question=payload.question,
@@ -733,11 +704,18 @@ def download_pdf_report(case_id: str, pdf_filename: str):
 
 @app.post("/api/demo/load")
 def load_synthetic_demo_case(db: Session = Depends(get_db)):
+    """
+    1-Click Demo Loader:
+    Creates demo case -> generates 7 realistic evidence files -> calculates SHA-256 ->
+    preserves read-only copy -> executes full triage pipeline -> ready to explore!
+    """
     case_code = "INC-2026-DEMO"
     
+    # Check if demo case already exists; if so, refresh it
     existing_case = db.query(Case).filter(Case.case_code == case_code).first()
     if existing_case:
         case_id = existing_case.id
+        # Clear children
         db.query(Evidence).filter(Evidence.case_id == case_id).delete()
         db.query(Artifact).filter(Artifact.case_id == case_id).delete()
         db.query(Event).filter(Event.case_id == case_id).delete()
@@ -761,9 +739,11 @@ def load_synthetic_demo_case(db: Session = Depends(get_db)):
         db.refresh(demo_case)
         case_id = demo_case.id
 
+    # Generate synthetic files on disk
     case_evidence_dir = EVIDENCE_DIR / case_id
     generated_files = generate_synthetic_evidence_files(case_evidence_dir)
 
+    # Add evidence records with SHA-256
     evidence_records = []
     for fname, fpath in generated_files.items():
         sha256_val, md5_val, file_size = preserve_evidence_file(fpath, fpath)
@@ -786,6 +766,8 @@ def load_synthetic_demo_case(db: Session = Depends(get_db)):
         evidence_records.append(ev_entry)
 
     db.commit()
+
+    # Automatically execute triage
     triage_res = execute_case_triage(case_id, db)
 
     return {
@@ -794,10 +776,61 @@ def load_synthetic_demo_case(db: Session = Depends(get_db)):
         "triage_summary": triage_res
     }
 
+@app.get("/api/demo/sample-pack.zip")
+def download_sample_evidence_pack():
+    """Generates and provides a downloadable zip archive containing sample forensic evidence files."""
+    from backend.demo_data.sample_pack import create_sample_evidence_zip
+    zip_path = create_sample_evidence_zip()
+    return FileResponse(
+        path=zip_path,
+        filename="CYBERTRIAGE_Sample_Evidence_Pack.zip",
+        media_type="application/zip"
+    )
+
+@app.post("/api/cases/{case_id}/evidence/load-samples")
+def load_sample_evidence_into_case(case_id: str, db: Session = Depends(get_db)):
+    """1-Click loads sample evidence files into the active case without running triage automatically."""
+    case_obj = db.query(Case).filter(Case.id == case_id).first()
+    if not case_obj:
+        raise HTTPException(status_code=404, detail="Case not found")
+
+    case_evidence_dir = EVIDENCE_DIR / case_id
+    generated_files = generate_synthetic_evidence_files(case_evidence_dir)
+
+    added_count = 0
+    for fname, fpath in generated_files.items():
+        existing = db.query(Evidence).filter(Evidence.case_id == case_id, Evidence.filename == fname).first()
+        if existing:
+            continue
+
+        sha256_val, md5_val, file_size = preserve_evidence_file(fpath, fpath)
+        ext = fname.split(".")[-1].lower()
+
+        ev_entry = Evidence(
+            case_id=case_id,
+            filename=fname,
+            original_name=fname,
+            file_type=ext,
+            file_size=file_size,
+            sha256=sha256_val,
+            md5=md5_val,
+            status="Processed",
+            integrity_status="Integrity Verified",
+            is_readonly=True,
+            storage_path=str(fpath)
+        )
+        db.add(ev_entry)
+        added_count += 1
+
+    db.commit()
+    return {"status": "success", "loaded_files": added_count, "total_evidence": db.query(Evidence).filter(Evidence.case_id == case_id).count()}
+
+
 # ==================== GLOBAL SEARCH API ====================
 
 @app.get("/api/search")
 def global_case_search(case_id: str, q: str = Query(..., min_length=1), db: Session = Depends(get_db)):
+    """Search across IP, domain, username, filename, process, event ID, hash, timestamp."""
     s = f"%{q}%"
     
     events = db.query(Event).filter(
@@ -832,6 +865,15 @@ def global_case_search(case_id: str, q: str = Query(..., min_length=1), db: Sess
             "id": a.id, "category": a.category, "name": a.name, "value": a.value, "source_location": a.source_location
         } for a in artifacts]
     }
+
+# Favicon handler
+@app.get("/favicon.ico", include_in_schema=False)
+@app.get("/favicon.png", include_in_schema=False)
+async def get_favicon():
+    favicon_path = FRONTEND_DIR / "favicon.png"
+    if favicon_path.exists():
+        return FileResponse(favicon_path, media_type="image/png")
+    return JSONResponse({"status": "no favicon"}, status_code=404)
 
 # Mount Frontend static files
 if FRONTEND_DIR.exists():
