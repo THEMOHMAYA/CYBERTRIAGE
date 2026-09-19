@@ -1,0 +1,66 @@
+{
+  "edr_agent_metadata": {
+    "agent_id": "EDR-AGT-90184-SEC",
+    "hostname": "WS-FIN-091",
+    "fqdn": "ws-fin-091.corp.financial.intra",
+    "os_name": "Microsoft Windows 11 Enterprise (64-bit)",
+    "os_build": "10.0.22631.3296",
+    "domain": "CORP.INTRA",
+    "primary_ip": "192.168.1.105",
+    "mac_address": "00:50:56:C0:00:08",
+    "last_reboot_utc": "2026-09-18T06:00:00Z",
+    "active_compromised_user": "analyst01"
+  },
+  "critical_edr_alerts": [
+    {
+      "alert_id": "EDR-ALT-4091",
+      "timestamp": "2026-09-18T09:17:45Z",
+      "severity": "CRITICAL",
+      "technique": "T1059.001 - PowerShell Script Execution",
+      "description": "Obfuscated Base64-encoded command line spawned from explorer.exe downloading external stager",
+      "mitre_tactic": "Execution"
+    },
+    {
+      "alert_id": "EDR-ALT-4094",
+      "timestamp": "2026-09-18T09:21:30Z",
+      "severity": "CRITICAL",
+      "technique": "T1003.001 - LSASS Memory Dumping",
+      "description": "Mimikatz privilege::debug invocation detected in process tree",
+      "mitre_tactic": "Credential Access"
+    },
+    {
+      "alert_id": "EDR-ALT-4099",
+      "timestamp": "2026-09-18T09:24:50Z",
+      "severity": "HIGH",
+      "technique": "T1048.003 - Exfiltration Over Unencrypted/Encrypted Non-C2 Protocol",
+      "description": "High volume outbound TLS data transfer (28.4 MB) to known bulletproof hosting IP 185.220.101.5",
+      "mitre_tactic": "Exfiltration"
+    }
+  ],
+  "threat_intel_iocs": [
+    {
+      "type": "ip",
+      "value": "198.51.100.24",
+      "threat_name": "DarkVault C2 Primary IP",
+      "confidence": 0.98
+    },
+    {
+      "type": "ip",
+      "value": "185.220.101.5",
+      "threat_name": "DarkVault Exfiltration Proxy",
+      "confidence": 0.95
+    },
+    {
+      "type": "domain",
+      "value": "c2-gateway.darkcloud-apt.net",
+      "threat_name": "Cobalt Strike Dynamic DNS",
+      "confidence": 0.99
+    },
+    {
+      "type": "sha256",
+      "value": "9f8e7d6c5b4a3102938475610293847561029384756102938475610293847561",
+      "threat_name": "Mimikatz Dump Executable",
+      "confidence": 1.0
+    }
+  ]
+}
