@@ -238,11 +238,14 @@ export async function renderReports(container, activeCase, navigateTo) {
         </div>
 
         <!-- Final Report Footer Signature (Syntax Squad) -->
-        <div style="background:#F0F9FF; border:1.5px solid #0284C7; border-radius:8px; padding:1rem; text-align:center;">
-          <div style="font-size:1rem; font-weight:800; color:#0284C7; letter-spacing:0.02em; margin-bottom:0.25rem;">
-            Report by Cybertriage created by Syntax Squad
+        <div style="background:#F0F9FF; border:1.5px solid #0284C7; border-radius:8px; padding:1.2rem 1rem; text-align:center;">
+          <div style="font-size:1.25rem; font-weight:800; color:#0284C7; letter-spacing:0.04em; margin-bottom:0.15rem; text-transform:uppercase;">
+            PDF BY CYBERTRIAGE
           </div>
-          <div style="font-size:0.75rem; color:#475569;">
+          <div style="font-size:0.825rem; font-weight:600; color:#475569; margin-bottom:0.45rem; letter-spacing:0.02em;">
+            made by Syntax Squad
+          </div>
+          <div style="font-size:0.75rem; color:#64748B;">
             Case: <strong>${caseName}</strong> &bull; Examiner: <strong>${investigatorName}</strong> &bull; Generated: <strong>${currentDateTime}</strong>
           </div>
         </div>
