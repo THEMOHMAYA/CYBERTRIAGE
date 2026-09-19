@@ -1,0 +1,7 @@
+timestamp,event_id,event_type,computer_name,user,domain,logon_type,src_ip,action,status,status_code,details
+2026-09-18T08:58:12Z,4625,Failed Logon,WS-FIN-091,analyst01,CORP.INTRA,10 (RemoteInteractive),198.51.100.24,Logon Attempt,Failure,0xC000006A,Bad user password entered via RDP
+2026-09-18T08:59:45Z,4625,Failed Logon,WS-FIN-091,analyst01,CORP.INTRA,10 (RemoteInteractive),198.51.100.24,Logon Attempt,Failure,0xC000006A,Bad user password entered via RDP
+2026-09-18T09:15:22Z,4624,Successful Logon,WS-FIN-091,analyst01,CORP.INTRA,10 (RemoteInteractive),198.51.100.24,User Logon,Success,0x0,Kerberos authentication successful from external IP
+2026-09-18T09:16:05Z,4672,Special Privileges Assigned,WS-FIN-091,analyst01,CORP.INTRA,2 (Interactive),127.0.0.1,Privilege Escalation,Success,0x0,SeDebugPrivilege and SeImpersonatePrivilege granted
+2026-09-18T09:25:40Z,7045,Service Installed,WS-FIN-091,SYSTEM,CORP.INTRA,Service,127.0.0.1,Persistence,Success,0x0,New Service: WindowsHealthCheckMonitor Path: C:\Windows\Temp\nc.exe -L -p 4444 -e cmd.exe
+2026-09-18T09:30:10Z,1102,Audit Log Cleared,WS-FIN-091,analyst01,CORP.INTRA,Interactive,127.0.0.1,Defense Evasion,Warning,0x0,The Security audit log was cleared by user session
