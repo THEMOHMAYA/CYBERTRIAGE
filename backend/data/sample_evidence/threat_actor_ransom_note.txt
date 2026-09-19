@@ -1,0 +1,14 @@
+=== YOUR CORPORATE NETWORK HAS BEEN ENCRYPTED AND DATA EXFILTRATED ===
+
+Incident Case: VICTIM-FINTECH-CORP-9482
+All your critical files, databases, financial records, and PII vaults have been encrypted with military-grade AES-256 + RSA-4096.
+In addition, over 28 GB of sensitive customer and financial data was downloaded to our private leak servers.
+
+--- HOW TO RESTORE YOUR DATA ---
+1. Do not attempt to rename, delete, or decrypt files using third-party software; this will result in permanent data destruction.
+2. Download TOR Browser and visit our private negotiation portal:
+   http://darkvault7wexilq9z3p2l0k8j4m5n6o7.onion/negotiation?id=VICTIM-FINTECH-CORP-9482
+3. Alternative contact email: blackvault_ransom_ops@protonmail.com
+4. You have 72 hours before your confidential data is published to the public leak blog.
+
+Threat Group: DarkVault Ransomware Syndicate
