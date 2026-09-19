@@ -22,6 +22,15 @@ export const API = {
     return await res.json();
   },
 
+  async updateCaseStatus(caseId, status) {
+    const res = await fetch(`${API_BASE}/cases/${caseId}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    return await res.json();
+  },
+
   // Evidence
   async uploadEvidence(caseId, files) {
     const formData = new FormData();
