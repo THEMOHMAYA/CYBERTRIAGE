@@ -1,0 +1,3 @@
+timestamp,device_name,vendor,product_id,serial_number,volume_guid,drive_letter,user,device_id,action
+2026-09-18T09:20:04Z,Ultra Fit USB 3.1,SanDisk,Prod_Ultra_Fit,SNDK-49102-X9,{a482b810-7210-482a-9e12-b91284a1004a},E:,analyst01,USBSTOR\Disk&Ven_SanDisk&Prod_Ultra_Fit&Rev_1.00\04018742918491823901,Device Mounted / Volume Mounted
+2026-09-18T09:29:10Z,Ultra Fit USB 3.1,SanDisk,Prod_Ultra_Fit,SNDK-49102-X9,{a482b810-7210-482a-9e12-b91284a1004a},E:,analyst01,USBSTOR\Disk&Ven_SanDisk&Prod_Ultra_Fit&Rev_1.00\04018742918491823901,Device Dismounted / Ejected
