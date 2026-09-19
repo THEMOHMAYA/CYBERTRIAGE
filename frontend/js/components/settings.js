@@ -108,7 +108,7 @@ export function renderSettings(container, activeCase, navigateTo) {
           <div style="line-height:1.2;">
             <div style="font-weight:700; font-size:0.9rem; color:#FFF;">Ayush Raj</div>
             <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:monospace;">@THEMOHMAYA</div>
-            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Lead Architecture & DFIR</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Author</div>
           </div>
         </a>
 
@@ -118,7 +118,7 @@ export function renderSettings(container, activeCase, navigateTo) {
           <div style="line-height:1.2;">
             <div style="font-weight:700; font-size:0.9rem; color:#FFF;">Akul</div>
             <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:monospace;">@akul17</div>
-            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Core Developer & Pipeline</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Contributor</div>
           </div>
         </a>
 
@@ -128,7 +128,7 @@ export function renderSettings(container, activeCase, navigateTo) {
           <div style="line-height:1.2;">
             <div style="font-weight:700; font-size:0.9rem; color:#FFF;">Lakshay Kumar</div>
             <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:monospace;">@Lakshay-kumar001</div>
-            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Core Developer & IR</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Contributor</div>
           </div>
         </a>
 
@@ -138,7 +138,7 @@ export function renderSettings(container, activeCase, navigateTo) {
           <div style="line-height:1.2;">
             <div style="font-weight:700; font-size:0.9rem; color:#FFF;">Bhanu Pratap Singh</div>
             <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:monospace;">@partapsinghbhanu69-gif</div>
-            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Core Developer & Security</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Contributor</div>
           </div>
         </a>
 
