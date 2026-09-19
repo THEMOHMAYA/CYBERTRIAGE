@@ -1,0 +1,8 @@
+CYBERTRIAGE DFIR INCIDENT BRIEFING
+===================================
+Incident: Suspicious Data Access & Potential Exfiltration
+Affected Host: DESKTOP-SEC-09 (IP: 192.168.1.105)
+User Account: analyst01
+Summary of Initial Alert:
+Endpoint telemetry recorded anomalous PowerShell commands followed by USB storage insertion and high-volume outbound network traffic to external IP 203.0.113.42 (c2-sync-agent.net).
+Ingest the provided CSV, LOG, and JSON files to perform automated digital forensics triage.
