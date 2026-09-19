@@ -116,7 +116,7 @@ Access the web dashboard in your browser via the configured port.
           <img src="https://github.com/THEMOHMAYA.png?size=100" width="100px;" alt="Ayush Raj"/><br />
           <sub><b>Ayush Raj</b></sub>
         </a><br />
-        <sub>Author / Lead</sub>
+        <sub>Main Developer / Lead</sub>
       </td>
       <td align="center" width="25%">
         <a href="https://github.com/akul17">
