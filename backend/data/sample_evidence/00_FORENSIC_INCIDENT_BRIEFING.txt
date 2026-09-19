@@ -1,0 +1,31 @@
+CYBERTRIAGE DFIR OFFICIAL INCIDENT BRIEFING
+======================================================================
+Case ID: VICTIM-FINTECH-CORP-9482
+Classification: CONFIDENTIAL // LAW ENFORCEMENT SENSITIVE
+Incident: Multi-Stage Cyber Attack & Ransomware Deployment (Cobalt Strike)
+Affected Assets: WS-FIN-091 (192.168.1.105), SRV-PROD-DB01, DC01.CORP.INTRA
+Compromised Account: analyst01 (CORP\analyst01)
+Threat Actor Group: DarkVault Syndicate / APT Simulation
+
+INCIDENT TIMELINE SUMMARY:
+1. Web Server Exploitation: SQLMap and web shell uploads via webserver_access.log
+2. RDP Brute-Force & Initial Access: External IP 198.51.100.24 gained RDP session.
+3. Privilege Escalation: SeDebugPrivilege and SeImpersonatePrivilege granted.
+4. Staging & Execution: PowerShell encoded stager downloaded Cobalt Strike reflective DLL.
+5. Credential Dumping: Mimikatz sekurlsa::logonpasswords extracted credentials.
+6. Removable USB Staging: SanDisk Ultra Fit (E:) connected for local staging.
+7. Data Exfiltration: 28.4 MB of PII and financial records transferred to 185.220.101.5.
+8. Impact & Destruction: VSS Shadow copies wiped, files encrypted with .locked extension,
+   Security event logs cleared, and threat actor ransom note dropped.
+
+EVIDENCE INVENTORY:
+- windows_security_eventlog.csv (Windows Event Log IDs 4624, 4625, 4672, 7045, 1102)
+- sysmon_process_creation.csv (Sysmon Event ID 1 with parent-child process tree & hashes)
+- zeek_network_traffic.log (Zeek / Bro network telemetry, DNS lookups, and TLS C2)
+- auth_sshd_syslog.log (Linux authentication logs with SSH brute-force and sudo dump)
+- webserver_access.log (Nginx / Apache web server access logs)
+- usbstor_registry_mount.csv (Windows USBSTOR and volume mount records)
+- file_exfiltration_staging.csv (File access, staging, and ransomware encryption logs)
+- threat_actor_ransom_note.txt (Ransom note dropped in affected directories)
+- edr_host_telemetry.json (CrowdStrike / SentinelOne EDR alerts and host telemetry)
+======================================================================
