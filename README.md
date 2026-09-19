@@ -108,8 +108,6 @@ Access the web dashboard in your browser via the configured port.
 
 ## 👥 Contributors & Team (Syntax Squad)
 
-We are proud to acknowledge the **Syntax Squad** team members and contributors who engineered **CYBERTRIAGE AI**:
-
 <div align="center">
   <table>
     <tr>
@@ -118,28 +116,28 @@ We are proud to acknowledge the **Syntax Squad** team members and contributors w
           <img src="https://github.com/THEMOHMAYA.png?size=100" width="100px;" alt="Ayush Raj"/><br />
           <sub><b>Ayush Raj</b></sub>
         </a><br />
-        <sub>Lead Developer & DFIR Architecture</sub>
+        <sub>Author / Lead</sub>
       </td>
       <td align="center" width="25%">
         <a href="https://github.com/akul17">
           <img src="https://github.com/akul17.png?size=100" width="100px;" alt="Akul"/><br />
           <sub><b>Akul</b></sub>
         </a><br />
-        <sub>Core Developer & Forensics Pipeline</sub>
+        <sub>Contributor</sub>
       </td>
       <td align="center" width="25%">
         <a href="https://github.com/Lakshay-kumar001">
           <img src="https://github.com/Lakshay-kumar001.png?size=100" width="100px;" alt="Lakshay Kumar"/><br />
           <sub><b>Lakshay Kumar</b></sub>
         </a><br />
-        <sub>Core Developer & Incident Response</sub>
+        <sub>Contributor</sub>
       </td>
       <td align="center" width="25%">
         <a href="https://github.com/partapsinghbhanu69-gif">
           <img src="https://github.com/partapsinghbhanu69-gif.png?size=100" width="100px;" alt="Bhanu Pratap Singh"/><br />
           <sub><b>Bhanu Pratap Singh</b></sub>
         </a><br />
-        <sub>Core Developer & Security Engineering</sub>
+        <sub>Contributor</sub>
       </td>
     </tr>
   </table>
