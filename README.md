@@ -106,7 +106,41 @@ Access the web dashboard in your browser via the configured port.
 
 ---
 
+## 👥 Contributors & Team (Syntax Squad)
+
+We are grateful to the contributors who helped build and refine **CYBERTRIAGE AI**:
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <a href="https://github.com/THEMOHMAYA">
+          <img src="https://github.com/THEMOHMAYA.png?size=100" width="100px;" alt="Ayush Raj"/><br />
+          <sub><b>Ayush Raj</b></sub>
+        </a><br />
+        <sub>Lead Developer / DFIR Architecture</sub>
+      </td>
+      <td align="center">
+        <a href="https://github.com/akul17">
+          <img src="https://github.com/akul17.png?size=100" width="100px;" alt="Akul"/><br />
+          <sub><b>Akul</b></sub>
+        </a><br />
+        <sub>Contributor / Core Developer</sub>
+      </td>
+      <td align="center">
+        <a href="https://github.com/Lakshay-kumar001">
+          <img src="https://github.com/Lakshay-kumar001.png?size=100" width="100px;" alt="Lakshay Kumar"/><br />
+          <sub><b>Lakshay Kumar</b></sub>
+        </a><br />
+        <sub>Contributor / Core Developer</sub>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Developed with precision for digital forensic analysts, incident response teams, and cyber defense operations.
+Developed with precision by **Syntax Squad** for digital forensic analysts, incident response teams, and cyber defense operations.
