@@ -1,0 +1,5 @@
+timestamp,event_id,action,file_path,process,user,file_size_bytes,sha256_hash,details
+2026-09-18T09:22:15Z,FILE-0041,File Read,C:\Corporate\Financials\Q4_Audit_Master_Confidential.xlsx,powershell.exe,analyst01,5824100,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,Confidential financial audit spreadsheet accessed
+2026-09-18T09:23:00Z,FILE-0042,File Read,C:\Corporate\Database\customer_vault_pii.db,powershell.exe,analyst01,42190800,7d8e9f0123456789abcdef0123456789abcdef0123456789abcdef0123456789ab,Customer PII database read by PowerShell
+2026-09-18T09:27:10Z,FILE-0048,File Write,E:\Staging\exfil_archive_encrypted.7z,cmd.exe,analyst01,28450192,f2d1e0c9b8a70654321fedcba0987654321fedcba0987654321fedcba0987654,Encrypted exfiltration archive created on removable drive E:
+2026-09-18T09:28:45Z,FILE-0052,File Rename / Encrypt,C:\Corporate\Financials\Q4_Audit_Master_Confidential.xlsx.locked,svchost.dll,analyst01,5824100,99a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8,Ransomware payload encrypted original file with .locked extension
