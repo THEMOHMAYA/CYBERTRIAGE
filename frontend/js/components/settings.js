@@ -89,6 +89,61 @@ export function renderSettings(container, activeCase, navigateTo) {
         </div>
       </div>
     </div>
+
+    <!-- Syntax Squad Contributors & Engineering Team Card -->
+    <div class="dfir-card" style="margin-top:1.5rem;">
+      <div class="card-header" style="margin-bottom:1rem;">
+        <div class="card-title">
+          <i class="fa-solid fa-users" style="color:var(--accent-cyan);"></i>
+          Engineering Team & Contributors &bull; Syntax Squad
+        </div>
+        <span class="badge badge-info">CORE CONTRIBUTORS</span>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+        
+        <!-- Member 1: Ayush Raj -->
+        <a href="https://github.com/THEMOHMAYA" target="_blank" style="text-decoration:none; color:inherit; background:var(--bg-tertiary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); display:flex; align-items:center; gap:0.85rem; transition:all 0.2s;">
+          <img src="https://github.com/THEMOHMAYA.png?size=80" style="width:44px; height:44px; border-radius:50%; border:2px solid var(--accent-cyan);" alt="Ayush Raj" />
+          <div style="line-height:1.2;">
+            <div style="font-weight:700; font-size:0.9rem; color:#FFF;">Ayush Raj</div>
+            <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:monospace;">@THEMOHMAYA</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Lead Architecture & DFIR</div>
+          </div>
+        </a>
+
+        <!-- Member 2: Akul -->
+        <a href="https://github.com/akul17" target="_blank" style="text-decoration:none; color:inherit; background:var(--bg-tertiary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); display:flex; align-items:center; gap:0.85rem; transition:all 0.2s;">
+          <img src="https://github.com/akul17.png?size=80" style="width:44px; height:44px; border-radius:50%; border:2px solid var(--border-color);" alt="Akul" />
+          <div style="line-height:1.2;">
+            <div style="font-weight:700; font-size:0.9rem; color:#FFF;">Akul</div>
+            <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:monospace;">@akul17</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Core Developer & Pipeline</div>
+          </div>
+        </a>
+
+        <!-- Member 3: Lakshay Kumar -->
+        <a href="https://github.com/Lakshay-kumar001" target="_blank" style="text-decoration:none; color:inherit; background:var(--bg-tertiary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); display:flex; align-items:center; gap:0.85rem; transition:all 0.2s;">
+          <img src="https://github.com/Lakshay-kumar001.png?size=80" style="width:44px; height:44px; border-radius:50%; border:2px solid var(--border-color);" alt="Lakshay Kumar" />
+          <div style="line-height:1.2;">
+            <div style="font-weight:700; font-size:0.9rem; color:#FFF;">Lakshay Kumar</div>
+            <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:monospace;">@Lakshay-kumar001</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Core Developer & IR</div>
+          </div>
+        </a>
+
+        <!-- Member 4: Bhanu Pratap Singh -->
+        <a href="https://github.com/partapsinghbhanu69-gif" target="_blank" style="text-decoration:none; color:inherit; background:var(--bg-tertiary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); display:flex; align-items:center; gap:0.85rem; transition:all 0.2s;">
+          <img src="https://github.com/partapsinghbhanu69-gif.png?size=80" style="width:44px; height:44px; border-radius:50%; border:2px solid var(--border-color);" alt="Bhanu Pratap Singh" />
+          <div style="line-height:1.2;">
+            <div style="font-weight:700; font-size:0.9rem; color:#FFF;">Bhanu Pratap Singh</div>
+            <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:monospace;">@partapsinghbhanu69-gif</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Core Developer & Security</div>
+          </div>
+        </a>
+
+      </div>
+    </div>
   `;
 
   document.getElementById('btn-demo-reinit').onclick = () => {
