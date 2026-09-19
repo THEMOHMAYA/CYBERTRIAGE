@@ -140,11 +140,21 @@ def generate_pdf_report(
 
     footer_brand_style = ParagraphStyle(
         'FooterBrandStyle',
+        parent=styles['Heading2'],
+        fontName='Helvetica-Bold',
+        fontSize=13,
+        leading=16,
+        textColor=colors.HexColor('#0284C7'),
+        alignment=TA_CENTER
+    )
+
+    footer_madeby_style = ParagraphStyle(
+        'FooterMadeByStyle',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=9.5,
-        leading=13,
-        textColor=colors.HexColor('#0284C7'),
+        fontSize=8.5,
+        leading=11,
+        textColor=colors.HexColor('#475569'),
         alignment=TA_CENTER
     )
 
@@ -306,11 +316,12 @@ def generate_pdf_report(
     story.append(Paragraph(limitations_text, disclaimer_style))
     story.append(Spacer(1, 14))
 
-    # Final Branding Box: "Report by Cybertriage created by Syntax Squad"
+    # Final Branding Box: "PDF BY CYBERTRIAGE / made by Syntax Squad"
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#CBD5E1'), spaceBefore=8, spaceAfter=8))
     
     brand_table_data = [
-        [Paragraph("<b>Report by Cybertriage created by Syntax Squad</b>", footer_brand_style)],
+        [Paragraph("PDF BY CYBERTRIAGE", footer_brand_style)],
+        [Paragraph("made by Syntax Squad", footer_madeby_style)],
         [Paragraph(f"Case: {case_name} | Examiner: {investigator_name} | Timestamp: {current_time_str}", footer_sub_style)]
     ]
     brand_table = Table(brand_table_data, colWidths=[530])
