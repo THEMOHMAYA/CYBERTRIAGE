@@ -1,0 +1,5 @@
+timestamp,event_id,event_type,user,device,src_ip,action,status,details
+2026-09-18T09:10:14Z,SEC-4625,Failed Logon,analyst01,DESKTOP-SEC-09,192.168.1.105,Logon Attempt,Failure,Bad password entered from internal subnet
+2026-09-18T09:15:22Z,SEC-4624,Successful Logon,analyst01,DESKTOP-SEC-09,192.168.1.105,User Logon,Success,Kerberos authentication accepted for analyst01
+2026-09-18T09:16:05Z,SEC-4672,Special Privileges Assigned,analyst01,DESKTOP-SEC-09,192.168.1.105,Privilege Escalation,Success,Admin privileges assigned to logon session
+2026-09-18T09:29:40Z,SEC-4634,Logoff,analyst01,DESKTOP-SEC-09,192.168.1.105,User Logoff,Success,Logon session terminated
