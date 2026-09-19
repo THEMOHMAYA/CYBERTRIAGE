@@ -108,7 +108,7 @@ export function renderSettings(container, activeCase, navigateTo) {
           <div style="line-height:1.2;">
             <div style="font-weight:700; font-size:0.9rem; color:#FFF;">Ayush Raj</div>
             <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:monospace;">@THEMOHMAYA</div>
-            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Author</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Main Developer / Lead</div>
           </div>
         </a>
 
