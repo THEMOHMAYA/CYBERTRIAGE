@@ -108,31 +108,38 @@ Access the web dashboard in your browser via the configured port.
 
 ## 👥 Contributors & Team (Syntax Squad)
 
-We are grateful to the contributors who helped build and refine **CYBERTRIAGE AI**:
+We are proud to acknowledge the **Syntax Squad** team members and contributors who engineered **CYBERTRIAGE AI**:
 
 <div align="center">
   <table>
     <tr>
-      <td align="center">
+      <td align="center" width="25%">
         <a href="https://github.com/THEMOHMAYA">
           <img src="https://github.com/THEMOHMAYA.png?size=100" width="100px;" alt="Ayush Raj"/><br />
           <sub><b>Ayush Raj</b></sub>
         </a><br />
-        <sub>Lead Developer / DFIR Architecture</sub>
+        <sub>Lead Developer & DFIR Architecture</sub>
       </td>
-      <td align="center">
+      <td align="center" width="25%">
         <a href="https://github.com/akul17">
           <img src="https://github.com/akul17.png?size=100" width="100px;" alt="Akul"/><br />
           <sub><b>Akul</b></sub>
         </a><br />
-        <sub>Contributor / Core Developer</sub>
+        <sub>Core Developer & Forensics Pipeline</sub>
       </td>
-      <td align="center">
+      <td align="center" width="25%">
         <a href="https://github.com/Lakshay-kumar001">
           <img src="https://github.com/Lakshay-kumar001.png?size=100" width="100px;" alt="Lakshay Kumar"/><br />
           <sub><b>Lakshay Kumar</b></sub>
         </a><br />
-        <sub>Contributor / Core Developer</sub>
+        <sub>Core Developer & Incident Response</sub>
+      </td>
+      <td align="center" width="25%">
+        <a href="https://github.com/partapsinghbhanu69-gif">
+          <img src="https://github.com/partapsinghbhanu69-gif.png?size=100" width="100px;" alt="Bhanu Pratap Singh"/><br />
+          <sub><b>Bhanu Pratap Singh</b></sub>
+        </a><br />
+        <sub>Core Developer & Security Engineering</sub>
       </td>
     </tr>
   </table>
