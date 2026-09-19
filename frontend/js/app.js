@@ -1,6 +1,6 @@
 // CYBERTRIAGE AI - Master Frontend Application Router & State Manager
-import { API } from './api.js';
-import { renderDashboard } from './components/dashboard.js';
+import { API } from './api.js?v=2.4';
+import { renderDashboard } from './components/dashboard.js?v=2.4';
 import { renderCases, showCreateCaseModal } from './components/create_case.js';
 import { renderEvidence } from './components/evidence.js';
 import { renderEvidenceExplorer } from './components/evidence_explorer.js';
